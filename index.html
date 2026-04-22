@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phần Mềm Báo Giá Chuyên Nghiệp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media print {
+            .no-print { display: none; }
+            body { padding: 0; background: white; }
+            .print-container { box-shadow: none; border: none; width: 100%; margin: 0; }
+        }
+        .editable-cell:focus {
+            background-color: #fefce8;
+            outline: 2px solid #eab308;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 py-10 px-5 font-sans">
+
+    <div class="max-w-4xl mx-auto bg-white p-8 shadow-lg border border-gray-200 print-container" id="invoice">
+        <!-- Header -->
+        <div class="flex justify-between items-start mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-blue-700 uppercase mb-2" contenteditable="true">BẢNG BÁO GIÁ</h1>
+                <p class="text-gray-600">Số: <span contenteditable="true" class="border-b border-gray-400 px-1">BG-2026-001</span></p>
+                <p class="text-gray-600">Ngày: <span contenteditable="true" class="border-b border-gray-400 px-1" id="currentDate"></span></p>
+            </div>
+            <div class="text-right">
+                <h2 class="text-xl font-semibold" contenteditable="true">Tên Công Ty Của Bạn</h2>
+                <p class="text-sm text-gray-500" contenteditable="true">Địa chỉ: 123 Đường ABC, Quận 1, TP.HCM</p>
+                <p class="text-sm text-gray-500" contenteditable="true">Điện thoại: 090x xxx xxx</p>
+            </div>
+        </div>
+
+        <!-- Customer Info -->
+        <div class="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <h3 class="text-lg font-bold mb-3 text-gray-700">Thông tin khách hàng:</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase">Tên khách hàng/Đơn vị</label>
+                    <div contenteditable="true" class="editable-cell text-lg font-medium p-1">Nhập tên khách hàng...</div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase">Địa chỉ / Số điện thoại</label>
+                    <div contenteditable="true" class="editable-cell p-1">Nhập địa chỉ hoặc SĐT...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Items Table -->
+        <table class="w-full mb-8 border-collapse border border-gray-300">
+            <thead>
+                <tr class="bg-gray-200 text-gray-700 uppercase text-sm">
+                    <th class="border border-gray-300 p-2 w-12">STT</th>
+                    <th class="border border-gray-300 p-2 text-left">Tên sản phẩm / Mô tả</th>
+                    <th class="border border-gray-300 p-2 w-24 text-center">ĐVT</th>
+                    <th class="border border-gray-300 p-2 w-24 text-center">Số lượng</th>
+                    <th class="border border-gray-300 p-2 w-32 text-center">Đơn giá</th>
+                    <th class="border border-gray-300 p-2 w-32 text-center">Thành tiền</th>
+                    <th class="border border-gray-300 p-2 w-16 no-print">Xóa</th>
+                </tr>
+            </thead>
+            <tbody id="itemTableBody">
+                <!-- Rows added by JS -->
+            </tbody>
+        </table>
+
+        <!-- Control Buttons -->
+        <div class="no-print mb-8 flex gap-3">
+            <button onclick="addRow()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition">
+                + Thêm sản phẩm
+            </button>
+            <button onclick="window.print()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium transition">
+                🖨️ In / Xuất PDF
+            </button>
+            <button onclick="saveData()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md font-medium transition">
+                💾 Lưu nháp
+            </button>
+        </div>
+
+        <!-- Totals -->
+        <div class="flex justify-end">
+            <div class="w-full md:w-64 space-y-2">
+                <div class="flex justify-between text-gray-600">
+                    <span>Cộng tiền:</span>
+                    <span id="subtotal">0</span>
+                </div>
+                <div class="flex justify-between text-gray-600">
+                    <span>Thuế VAT (10%):</span>
+                    <span id="tax">0</span>
+                </div>
+                <div class="flex justify-between text-xl font-bold text-blue-700 border-t-2 border-blue-700 pt-2">
+                    <span>Tổng cộng:</span>
+                    <span id="total">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-12 grid grid-cols-2 gap-20 text-center">
+            <div>
+                <p class="font-bold mb-16">Người lập biểu</p>
+                <p class="text-sm italic">(Ký và ghi rõ họ tên)</p>
+            </div>
+            <div>
+                <p class="font-bold mb-16">Đại diện khách hàng</p>
+                <p class="text-sm italic">(Ký và ghi rõ họ tên)</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize date
+        document.getElementById('currentDate').innerText = new Date().toLocaleDateString('vi-VN');
+
+        function formatMoney(amount) {
+            return new Intl.NumberFormat('vi-VN').format(amount) + ' đ';
+        }
+
+        function calculate() {
+            let subtotal = 0;
+            const rows = document.querySelectorAll('#itemTableBody tr');
+            
+            rows.forEach(row => {
+                const qty = parseFloat(row.querySelector('.qty').innerText) || 0;
+                const price = parseFloat(row.querySelector('.price').innerText.replace(/\\./g, '').replace(/\\,/g, '')) || 0;
+                const lineTotal = qty * price;
+                row.querySelector('.lineTotal').innerText = formatMoney(lineTotal);
+                subtotal += lineTotal;
+            });
+
+            const tax = subtotal * 0.1;
+            const total = subtotal + tax;
+
+            document.getElementById('subtotal').innerText = formatMoney(subtotal);
+            document.getElementById('tax').innerText = formatMoney(tax);
+            document.getElementById('total').innerText = formatMoney(total);
+        }
+
+        function addRow(data = { name: '', unit: 'Cái', qty: 1, price: 0 }) {
+            const tbody = document.getElementById('itemTableBody');
+            const rowCount = tbody.rows.length + 1;
+            const tr = document.createElement('tr');
+            tr.className = 'text-gray-700';
+            tr.innerHTML = `
+                <td class="border border-gray-300 p-2 text-center">${rowCount}</td>
+                <td class="border border-gray-300 p-2 editable-cell" contenteditable="true" oninput="calculate()">${data.name}</td>
+                <td class="border border-gray-300 p-2 text-center editable-cell" contenteditable="true" oninput="calculate()">${data.unit}</td>
+                <td class="border border-gray-300 p-2 text-center editable-cell qty" contenteditable="true" oninput="calculate()">${data.qty}</td>
+                <td class="border border-gray-300 p-2 text-center editable-cell price" contenteditable="true" oninput="calculate()">${data.price}</td>
+                <td class="border border-gray-300 p-2 text-center font-semibold lineTotal">${formatMoney(data.qty * data.price)}</td>
+                <td class="border border-gray-300 p-2 text-center no-print">
+                    <button onclick="this.parentElement.parentElement.remove(); calculate();" class="text-red-500 hover:text-red-700 font-bold">✕</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+            calculate();
+        }
+
+        function saveData() {
+            const items = [];
+            document.querySelectorAll('#itemTableBody tr').forEach(row => {
+                items.push({
+                    name: row.cells[1].innerText,
+                    unit: row.cells[2].innerText,
+                    qty: row.cells[3].innerText,
+                    price: row.cells[4].innerText
+                });
+            });
+            localStorage.setItem('saved_invoice_items', JSON.stringify(items));
+            alert('Đã lưu nháp thành công!');
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('saved_invoice_items');
+            if (saved) {
+                const items = JSON.parse(saved);
+                items.forEach(item => addRow(item));
+            } else {
+                // Default items for demo
+                addRow({ name: 'Sản phẩm mẫu A', unit: 'Bộ', qty: 2, price: 500000 });
+                addRow({ name: 'Sản phẩm mẫu B', unit: 'Cái', qty: 1, price: 1200000 });
+            }
+        }
+
+        window.onload = loadData;
+    </script>
+</body>
+</html>
