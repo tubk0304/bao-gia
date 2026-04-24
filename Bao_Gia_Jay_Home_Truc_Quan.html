@@ -155,7 +155,6 @@
         }
         input[type="number"], select.unit {
             width: 100%;
-            max-width: 90px;
             padding: 8px 6px;
             border: 1px solid var(--border-color);
             border-radius: 4px;
@@ -166,10 +165,15 @@
             box-sizing: border-box;
             background-color: white;
         }
+        input[type="number"] {
+            max-width: 90px;
+        }
         select.unit {
+            max-width: 110px;
             text-align: left;
             text-align-last: left;
             cursor: pointer;
+            white-space: nowrap;
         }
         input[type="number"]:focus,
         select.unit:focus {
@@ -228,6 +232,9 @@
             border-top: 2px dashed #cbd5e1;
             padding-top: 15px;
             margin-top: 5px;
+        }
+        .total-row.is-hidden {
+            display: none;
         }
         .currency {
             font-weight: 600;
@@ -292,11 +299,84 @@
                 -webkit-appearance: none;
                 margin: 0;
             }
+            select.unit {
+                border: none;
+                background: transparent;
+                padding: 0;
+                width: 100%;
+                max-width: none;
+                min-width: 0;
+                appearance: none;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                text-align: center;
+                text-align-last: center;
+            }
             .editable-cell {
                 border: none !important;
                 background: transparent !important;
                 box-shadow: none !important;
                 padding: 0;
+            }
+            body.compact-print .container {
+                padding: 0;
+            }
+            body.compact-print .header {
+                padding-bottom: 12px;
+                margin-bottom: 16px;
+            }
+            body.compact-print .company-info h1 {
+                font-size: 17px;
+                margin-bottom: 3px;
+            }
+            body.compact-print .company-info p,
+            body.compact-print .quote-info p,
+            body.compact-print .client-info p,
+            body.compact-print td,
+            body.compact-print th {
+                font-size: 12px;
+            }
+            body.compact-print .quote-info h2 {
+                font-size: 20px;
+                margin-bottom: 2px;
+            }
+            body.compact-print .client-section {
+                margin-bottom: 16px;
+                padding: 12px 14px;
+            }
+            body.compact-print .client-info h3 {
+                margin-bottom: 6px;
+                font-size: 12px;
+            }
+            body.compact-print table {
+                margin-bottom: 16px;
+            }
+            body.compact-print th {
+                padding: 8px 10px;
+            }
+            body.compact-print td {
+                padding: 7px 8px;
+            }
+            body.compact-print .add-actions {
+                display: none !important;
+            }
+            body.compact-print .total-box {
+                padding: 12px 18px;
+                width: 320px;
+            }
+            body.compact-print .total-row {
+                margin-bottom: 8px;
+                font-size: 13px;
+            }
+            body.compact-print .total-row.grand-total {
+                padding-top: 10px;
+                margin-top: 2px;
+                font-size: 16px;
+            }
+            body.compact-print .footer {
+                margin-top: 20px;
+                padding-top: 10px;
+                font-size: 11px;
             }
         }
         .limited-text {
@@ -535,6 +615,10 @@
                 <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                 In PDF
             </button>
+            <button class="btn-print" onclick="exportQuotePdfCompact()" style="background:#1d4ed8;box-shadow:0 4px 6px rgba(29,78,216,.3)">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h8M7 10h10M6 14h12M9 18h6"></path></svg>
+                In PDF Gọn
+            </button>
         </div>
         <div id="currentQuoteStatus" class="print-hide" style="display:none; margin: -8px 0 16px; padding: 8px 12px; border-radius: 8px; background: #eff6ff; color: #1d4ed8; font-size: 13px; font-weight: 600;"></div>
 
@@ -562,8 +646,8 @@
             </div>
             <div class="client-info" style="text-align: right;">
                 <h3>HẠNG MỤC BÁO GIÁ</h3>
-                <p>Hệ thống công tắc điều khiển</p>
-                <p>Hệ thống đèn chiếu sáng, sưởi & Smart Home</p>
+                <p><span class="editable-cell" contenteditable="true" spellcheck="false">Hệ thống công tắc điều khiển</span></p>
+                <p><span class="editable-cell" contenteditable="true" spellcheck="false">Hệ thống đèn chiếu sáng, sưởi & Smart Home</span></p>
             </div>
         </div>
 
@@ -574,7 +658,7 @@
                     <th width="11%">Mã SP</th>
                     <th width="27%">Loại thiết bị / Diễn giải</th>
                     <th width="12%">Thương hiệu</th>
-                    <th width="6%" class="text-center">ĐVT</th>
+                    <th width="8%" class="text-center">ĐVT</th>
                     <th width="12%" class="text-center">Số lượng</th>
                     <th width="15%" class="text-right">Đơn giá (VNĐ)</th>
                     <th width="13%" class="text-right">Thành tiền (VNĐ)</th>
@@ -607,6 +691,10 @@
             </div>
             <div class="total-section" style="margin-top: 0">
                 <div class="total-box">
+                    <div class="print-hide" style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px;">
+                        <button id="toggleDiscountBtn" type="button" onclick="toggleDiscountSection()" style="border:1px solid #cbd5e1;background:white;color:#334155;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;">Hiện chiết khấu</button>
+                        <button id="toggleAdvanceBtn" type="button" onclick="toggleAdvanceSection()" style="border:1px solid #cbd5e1;background:white;color:#334155;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;">Hiện tạm ứng</button>
+                    </div>
                     <div class="total-row" style="align-items: center;">
                         <span>Cộng tiền hàng:</span>
                         <span class="currency" id="subtotal">0</span>
@@ -615,15 +703,23 @@
                         <span>Phí lắp đặt (<span class="editable-cell" id="installPercent" contenteditable="true" spellcheck="false" style="min-width: 25px; text-align: center; border: 1px dashed #cbd5e1; border-radius: 4px; padding: 0 4px; margin: 0 2px;">10</span>%):</span>
                         <span class="currency" id="installationFee">0</span>
                     </div>
-                    <div class="total-row" style="align-items: center;">
-                        <span>Chi phí vận chuyển:</span>
-                        <div style="display: flex; align-items: center; gap: 4px;">
-                            <input type="number" id="transportFee" min="0" value="0" style="width: 105px; max-width: 100%; text-align: right; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; font-family: inherit; font-size: 14px; transition: 0.2s; outline: none;">
-                        </div>
+                    <div class="total-row is-hidden" id="discountRow" style="align-items: center;">
+                        <span>Chiết khấu (<span class="editable-cell" id="discountPercent" contenteditable="true" spellcheck="false" style="min-width: 25px; text-align: center; border: 1px dashed #cbd5e1; border-radius: 4px; padding: 0 4px; margin: 0 2px;">0</span>%):</span>
+                        <span class="currency" id="discountAmount">-0</span>
                     </div>
                     <div class="total-row grand-total">
                         <span>TỔNG CỘNG:</span>
                         <span class="currency" id="grandtotal">0 VNĐ</span>
+                    </div>
+                    <div class="total-row is-hidden" id="advanceRow" style="align-items: center;">
+                        <span>Đã tạm ứng:</span>
+                        <div style="display:flex;align-items:center;gap:4px;">
+                            <input type="number" id="advancePaid" min="0" value="0" style="width: 120px; max-width: 100%; text-align: right; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; font-family: inherit; font-size: 14px; transition: 0.2s; outline: none;">
+                        </div>
+                    </div>
+                    <div class="total-row is-hidden" id="remainingRow" style="align-items: center; font-weight:700;">
+                        <span>Còn lại:</span>
+                        <span class="currency" id="remainingAmount">0 VNĐ</span>
                     </div>
                 </div>
             </div>
@@ -697,6 +793,48 @@
             });
         }
 
+        function isDiscountVisible() {
+            const row = document.getElementById('discountRow');
+            return row ? !row.classList.contains('is-hidden') : false;
+        }
+
+        function updateDiscountToggleLabel() {
+            const btn = document.getElementById('toggleDiscountBtn');
+            if (!btn) return;
+            btn.textContent = isDiscountVisible() ? 'Ẩn chiết khấu' : 'Hiện chiết khấu';
+        }
+
+        function toggleDiscountSection(forceVisible) {
+            const row = document.getElementById('discountRow');
+            if (!row) return;
+            const nextVisible = typeof forceVisible === 'boolean' ? forceVisible : row.classList.contains('is-hidden');
+            row.classList.toggle('is-hidden', !nextVisible);
+            updateDiscountToggleLabel();
+            calculate();
+        }
+
+        function isAdvanceVisible() {
+            const row = document.getElementById('advanceRow');
+            return row ? !row.classList.contains('is-hidden') : false;
+        }
+
+        function updateAdvanceToggleLabel() {
+            const btn = document.getElementById('toggleAdvanceBtn');
+            if (!btn) return;
+            btn.textContent = isAdvanceVisible() ? 'Ẩn tạm ứng' : 'Hiện tạm ứng';
+        }
+
+        function toggleAdvanceSection(forceVisible) {
+            const advanceRow = document.getElementById('advanceRow');
+            const remainingRow = document.getElementById('remainingRow');
+            if (!advanceRow || !remainingRow) return;
+            const nextVisible = typeof forceVisible === 'boolean' ? forceVisible : advanceRow.classList.contains('is-hidden');
+            advanceRow.classList.toggle('is-hidden', !nextVisible);
+            remainingRow.classList.toggle('is-hidden', !nextVisible);
+            updateAdvanceToggleLabel();
+            calculate();
+        }
+
         function calculate() {
             let trs = document.querySelectorAll('#quote-body tr:not(.category-row)');
             let subtotal = 0;
@@ -730,19 +868,23 @@
             
             let installationFee = subtotal * (percent / 100);
             
-            // Lấy Phí vận chuyển
-            let transportInput = document.getElementById('transportFee');
-            let transportFee = 0;
-            if(transportInput && transportInput.value) {
-                transportFee = parseFloat(transportInput.value);
-                if(isNaN(transportFee)) transportFee = 0;
-            }
 
-            let grandtotal = subtotal + installationFee + transportFee;
+            let discountPercentText = document.getElementById('discountPercent')?.textContent.trim() || '0';
+            let discountPercent = parseFloat(discountPercentText.replace(/,/g, '.'));
+            if(isNaN(discountPercent)) discountPercent = 0;
+
+            let beforeDiscountTotal = subtotal + installationFee;
+            let discountAmount = isDiscountVisible() ? (beforeDiscountTotal * (discountPercent / 100)) : 0;
+            let grandtotal = beforeDiscountTotal - discountAmount;
+            let advancePaid = parseFloat(document.getElementById('advancePaid')?.value || '0');
+            if(isNaN(advancePaid)) advancePaid = 0;
+            let remainingAmount = grandtotal - (isAdvanceVisible() ? advancePaid : 0);
 
             document.getElementById('subtotal').textContent = formatMoney(subtotal);
             document.getElementById('installationFee').textContent = formatMoney(installationFee);
+            document.getElementById('discountAmount').textContent = '-' + formatMoney(discountAmount);
             document.getElementById('grandtotal').textContent = formatMoney(grandtotal) + ' VNĐ';
+            document.getElementById('remainingAmount').textContent = formatMoney(remainingAmount) + ' VNĐ';
 
             updateSTT();
         }
@@ -754,7 +896,9 @@
             return {
                 html: document.getElementById('quote-body').innerHTML,
                 outsideData: Array.from(document.querySelectorAll('.editable-cell:not(#quote-body .editable-cell)')).map(el => el.innerHTML),
-                outsideInputs: Array.from(document.querySelectorAll('.total-box input')).map(el => el.value)
+                outsideInputs: Array.from(document.querySelectorAll('.total-box input')).map(el => el.value),
+                discountVisible: isDiscountVisible(),
+                advanceVisible: isAdvanceVisible()
             };
         }
 
@@ -778,6 +922,9 @@
                     if (data.outsideInputs[index] !== undefined) el.value = data.outsideInputs[index];
                 });
             }
+
+            toggleDiscountSection(Boolean(data.discountVisible));
+            toggleAdvanceSection(Boolean(data.advanceVisible));
         }
 
         function createUnitSelectElement(selectedUnit = 'Cai') {
@@ -1016,11 +1163,13 @@
                 if(e.target && e.target.type === 'number') calculate();
             });
             
-            // Lắng nghe thay đổi ở khu vực tổng kết (% phí lắp đặt, phí vận chuyển)
+            // Lắng nghe thay đổi ở khu vực tổng kết (% phí lắp đặt, chiết khấu)
             const totalBox = document.querySelector('.total-box');
             if(totalBox) {
                 totalBox.addEventListener('input', calculate);
             }
+            updateDiscountToggleLabel();
+            updateAdvanceToggleLabel();
             
             // -- LOGIC AUTOCOMPLETE / GỢI Ý QUA API --
             const API_BASE = "http://localhost:8000/api";
@@ -1450,7 +1599,12 @@
                     project: quoteText(clientCells[1]),
                     subtotal: document.getElementById('subtotal')?.textContent || '0',
                     installationFee: document.getElementById('installationFee')?.textContent || '0',
-                    transportFee: document.getElementById('transportFee')?.value || '0',
+                    discountPercent: document.getElementById('discountPercent')?.textContent?.trim() || '0',
+                    discountAmount: document.getElementById('discountAmount')?.textContent || '-0',
+                    discountVisible: isDiscountVisible(),
+                    advancePaid: document.getElementById('advancePaid')?.value || '0',
+                    remainingAmount: document.getElementById('remainingAmount')?.textContent || '0',
+                    advanceVisible: isAdvanceVisible(),
                     grandtotal: document.getElementById('grandtotal')?.textContent || '0'
                 };
             }
@@ -1710,8 +1864,10 @@
                     <table class="meta">
                         <tr><td>Cong tien hang</td><td>${quoteEscapeHtml(meta.subtotal)}</td></tr>
                         <tr><td>Phi lap dat</td><td>${quoteEscapeHtml(meta.installationFee)}</td></tr>
-                        <tr><td>Phi van chuyen</td><td>${quoteEscapeHtml(meta.transportFee)}</td></tr>
+                        ${meta.discountVisible ? `<tr><td>Chiết khấu (${quoteEscapeHtml(meta.discountPercent)}%)</td><td>${quoteEscapeHtml(meta.discountAmount)}</td></tr>` : ''}
                         <tr><td><strong>Tong cong</strong></td><td><strong>${quoteEscapeHtml(meta.grandtotal)}</strong></td></tr>
+                        ${meta.advanceVisible ? `<tr><td>Da tam ung</td><td>${quoteEscapeHtml(meta.advancePaid)}</td></tr>` : ''}
+                        ${meta.advanceVisible ? `<tr><td>Con lai</td><td>${quoteEscapeHtml(meta.remainingAmount)}</td></tr>` : ''}
                     </table>
                     </body></html>`;
 
@@ -1724,6 +1880,23 @@
                 document.title = getQuoteFilename('pdf').replace(/\.pdf$/i, '');
                 window.print();
                 setTimeout(() => { document.title = oldTitle; }, 1000);
+            };
+
+            window.exportQuotePdfCompact = function() {
+                calculate();
+                const oldTitle = document.title;
+                const body = document.body;
+                const cleanup = () => {
+                    body.classList.remove('compact-print');
+                    document.title = oldTitle;
+                    window.removeEventListener('afterprint', cleanup);
+                };
+
+                body.classList.add('compact-print');
+                document.title = getQuoteFilename('pdf').replace(/\.pdf$/i, '') + '-gon';
+                window.addEventListener('afterprint', cleanup);
+                window.print();
+                setTimeout(cleanup, 1500);
             };
 
             updateQuoteEditState(null, '');

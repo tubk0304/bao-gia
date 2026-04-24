@@ -115,6 +115,7 @@ input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent);cursor:po
 </div>
 <div class="sel-bar" id="selBar"><span id="selCount">0 sản phẩm đã chọn</span>
 <div style="display:flex;gap:8px">
+<button class="btn" id="btnDuplicateBulk" onclick="duplicateSelected()">Double</button>
 <button class="btn" onclick="setCategoryBulk()">🏷️ Gán danh mục</button>
 <button class="btn" onclick="setBrandBulk()">🏢 Gán thương hiệu</button>
 <button class="btn btn-red" id="btnDeleteBulk" onclick="deleteBulk()">🗑️ Xóa đã chọn</button>
@@ -326,6 +327,39 @@ function toggleAll(c){document.querySelectorAll('.rowCb').forEach(cb=>{cb.checke
 function clearSelection(){selected.clear();document.querySelectorAll('.rowCb').forEach(cb=>cb.checked=false);document.getElementById('checkAll').checked=false;updateSelBar()}
 function updateSelBar(){const bar=document.getElementById('selBar');const n=selected.size;document.getElementById('selCount').textContent=n+' sản phẩm đã chọn';bar.classList.toggle('active',n>0)}
 
+function updateSelBar(){
+const bar=document.getElementById('selBar');
+const n=selected.size;
+document.getElementById('selCount').textContent=n+' sản phẩm đã chọn';
+bar.classList.toggle('active',n>0);
+const duplicateBtn=document.getElementById('btnDuplicateBulk');
+if(duplicateBtn){
+duplicateBtn.disabled=n!==1;
+duplicateBtn.style.opacity=n===1?'1':'.55';
+duplicateBtn.title=n===1?'Tạo sản phẩm mới từ bản đang chọn':'Hãy chọn đúng 1 sản phẩm để Double';
+}}
+
+function buildDuplicateSku(sku){
+const base=(sku||'').trim();
+if(!base)return '';
+let candidate=base+'-COPY';
+let index=2;
+const existing=new Set(allProducts.map(p=>(p.sku||'').trim().toLowerCase()));
+while(existing.has(candidate.toLowerCase())){
+candidate=base+'-COPY-'+index;
+index++;
+}
+return candidate;
+}
+
+function duplicateSelected(){
+if(selected.size!==1){toast('Hãy chọn đúng 1 SP để Double!','err');return}
+const id=[...selected][0];
+const product=allProducts.find(p=>Number(p.id)===Number(id));
+if(!product){toast('Không tìm thấy sản phẩm đã chọn!','err');return}
+openProductModal({...product,id:'',sku:buildDuplicateSku(product.sku)},true);
+}
+
 function exportToQuote(){
 if(!selected.size){toast('Chưa chọn sản phẩm!','err');return}
 const items=allProducts.filter(p=>selected.has(p.id));
@@ -401,6 +435,36 @@ function openProductModal(p){
 document.getElementById('productModal').classList.add('active');
 if(p){document.getElementById('modalTitle').textContent='✏️ Sửa #'+p.id;document.getElementById('editId').value=p.id;document.getElementById('fSku').value=p.sku;document.getElementById('fDesc').value=p.description;document.getElementById('fDetails').value=p.details||'';document.getElementById('fCat').value=p.category||'';document.getElementById('fBrand').value=p.brand||'';document.getElementById('fImage').value=p.image_url||'';updateImgPreview(p.image_url);document.getElementById('fListPrice').value=p.list_price;document.getElementById('fInputPrice').value=p.input_price;document.getElementById('fSellPrice').value=p.sell_price}
 else{document.getElementById('modalTitle').textContent='➕ Thêm SP';document.getElementById('editId').value='';document.getElementById('fSku').value='';document.getElementById('fDesc').value='';document.getElementById('fDetails').value='';document.getElementById('fCat').value='';document.getElementById('fBrand').value='';document.getElementById('fImage').value='';updateImgPreview('');document.getElementById('fListPrice').value=0;document.getElementById('fInputPrice').value=0;document.getElementById('fSellPrice').value=0}}
+function openProductModal(p,isDuplicate=false){
+document.getElementById('productModal').classList.add('active');
+if(p){
+document.getElementById('modalTitle').textContent=isDuplicate?'Double từ #'+p.id:'✏️ Sửa #'+p.id;
+document.getElementById('editId').value=isDuplicate?'':p.id;
+document.getElementById('fSku').value=p.sku;
+document.getElementById('fDesc').value=p.description;
+document.getElementById('fDetails').value=p.details||'';
+document.getElementById('fCat').value=p.category||'';
+document.getElementById('fBrand').value=p.brand||'';
+document.getElementById('fImage').value=p.image_url||'';
+updateImgPreview(p.image_url);
+document.getElementById('fListPrice').value=p.list_price;
+document.getElementById('fInputPrice').value=p.input_price;
+document.getElementById('fSellPrice').value=p.sell_price;
+}else{
+document.getElementById('modalTitle').textContent='➕ Thêm SP';
+document.getElementById('editId').value='';
+document.getElementById('fSku').value='';
+document.getElementById('fDesc').value='';
+document.getElementById('fDetails').value='';
+document.getElementById('fCat').value='';
+document.getElementById('fBrand').value='';
+document.getElementById('fImage').value='';
+updateImgPreview('');
+document.getElementById('fListPrice').value=0;
+document.getElementById('fInputPrice').value=0;
+document.getElementById('fSellPrice').value=0;
+}}
+
 function closeProductModal(){document.getElementById('productModal').classList.remove('active')}
 function editProduct(id){const p=allProducts.find(x=>x.id===id);if(p)openProductModal(p)}
 
