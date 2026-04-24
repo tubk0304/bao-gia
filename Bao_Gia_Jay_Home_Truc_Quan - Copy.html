@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo Giá Thiết Bị Điện - Smarthome Đà Nẵng</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0f172a;
+            --secondary-color: #3b82f6;
+            --text-color: #334155;
+            --bg-color: #f8fafc;
+            --border-color: #e2e8f0;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1050px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 40px 50px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        .btn-print, .btn-save, .btn-clear, .btn-export, .btn-import {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-print { background-color: var(--secondary-color); box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3); }
+        .btn-print:hover { background-color: #2563eb; transform: translateY(-1px); }
+        .btn-save { background-color: #10b981; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3); }
+        .btn-save:hover { background-color: #059669; transform: translateY(-1px); }
+        .btn-clear { background-color: #f59e0b; box-shadow: 0 4px 6px rgba(245, 158, 11, 0.3); }
+        .btn-clear:hover { background-color: #d97706; transform: translateY(-1px); }
+        .btn-export { background-color: #6366f1; box-shadow: 0 4px 6px rgba(99, 102, 241, 0.3); }
+        .btn-export:hover { background-color: #4f46e5; transform: translateY(-1px); }
+        .btn-import { background-color: #8b5cf6; box-shadow: 0 4px 6px rgba(139, 92, 246, 0.3); }
+        .btn-import:hover { background-color: #7c3aed; transform: translateY(-1px); }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .company-info h1 {
+            margin: 0 0 5px 0;
+            color: var(--primary-color);
+            font-size: 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .company-info p {
+            margin: 0 0 3px 0;
+            color: #64748b;
+            font-size: 14px;
+        }
+        .quote-info {
+            text-align: right;
+        }
+        .quote-info h2 {
+            margin: 0 0 5px 0;
+            color: var(--secondary-color);
+            font-size: 24px;
+            text-transform: uppercase;
+        }
+        .quote-info p {
+            margin: 0;
+            font-size: 14px;
+            color: #64748b;
+        }
+        .client-section {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            background-color: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px dashed var(--border-color);
+        }
+        .client-info h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: var(--secondary-color);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .client-info p {
+            margin: 5px 0;
+            font-size: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            table-layout: fixed;
+        }
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: left;
+            padding: 12px 15px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        th:first-child {
+            border-top-left-radius: 6px;
+        }
+        th:last-child {
+            border-top-right-radius: 6px;
+        }
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+            vertical-align: top;
+        }
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        tr:hover {
+            background-color: #f1f5f9;
+        }
+        .category-row {
+            background-color: #e2e8f0 !important;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            font-size: 13px;
+        }
+        input[type="number"] {
+            width: 100%;
+            max-width: 90px;
+            padding: 8px 6px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            text-align: right;
+            box-sizing: border-box;
+        }
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+        .editable-cell {
+            padding: 4px 6px;
+            border: 1px dashed transparent;
+            border-radius: 4px;
+            transition: all 0.2s;
+            outline: none;
+            min-height: 20px;
+            word-wrap: break-word;
+        }
+        span.editable-cell {
+            display: inline-block;
+            min-width: 150px;
+            vertical-align: top;
+        }
+        .editable-cell:hover {
+            border-color: #cbd5e1;
+            background-color: rgba(255,255,255,0.6);
+        }
+        .editable-cell:focus {
+            border-color: var(--secondary-color);
+            background-color: #fff;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .total-section {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .total-box {
+            background-color: #f1f5f9;
+            padding: 20px 30px;
+            border-radius: 8px;
+            width: 350px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 15px;
+            color: var(--text-color);
+        }
+        .total-row.grand-total {
+            font-weight: 800;
+            font-size: 18px;
+            color: var(--secondary-color);
+            border-top: 2px dashed #cbd5e1;
+            padding-top: 15px;
+            margin-top: 5px;
+        }
+        .currency {
+            font-weight: 600;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 13px;
+            color: #94a3b8;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                padding: 0;
+                max-width: 100%;
+            }
+            .actions {
+                display: none;
+            }
+            input[type="number"] {
+                border: none;
+                background: transparent;
+                padding: 0;
+                width: 100%;
+                text-align: right;
+                appearance: none;
+                -moz-appearance: textfield;
+            }
+            input[type="number"]::-webkit-outer-spin-button,
+            input[type="number"]::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+            .editable-cell {
+                border: none !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                padding: 0;
+            }
+        }
+        .limited-text {
+            color: #ef4444;
+            font-size: 12px;
+            display: block;
+            margin-top: 4px;
+            font-style: italic;
+        }
+        .amount {
+            color: var(--secondary-color);
+            font-weight: 600;
+            font-size: 15px;
+            vertical-align: middle;
+        }
+        .btn-delete {
+            background-color: transparent;
+            color: #ef4444;
+            border: none;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            opacity: 0.4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+        .btn-delete:hover {
+            opacity: 1;
+            background-color: #fee2e2;
+            transform: scale(1.05);
+        }
+        .deleted-row {
+            display: none !important;
+        }
+        @media print {
+            .action-col { display: none !important; }
+        }
+        .btn-add {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #3b82f6;
+            background-color: #eff6ff;
+            border: 1px dashed #3b82f6;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-add:hover {
+            background-color: #dbeafe;
+        }
+        @media print {
+            .add-actions { display: none !important; }
+            .print-hide { display: none !important; }
+        }
+        .category-header-wrap {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .btn-cat-action {
+            background: transparent;
+            padding: 4px 8px;
+            font-size: 11px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-transform: none;
+            opacity: 0.7;
+            margin-left: 6px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid currentColor;
+            transition: all 0.2s;
+        }
+        .btn-cat-action:hover {
+            opacity: 1;
+        }
+        .btn-cat-add { color: #3b82f6; border-color: #3b82f6; }
+        .btn-cat-add:hover { background: #eff6ff; }
+        .btn-cat-del { color: #ef4444; border-color: #ef4444; }
+        .btn-cat-del:hover { background: #fee2e2; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="actions">
+            <button class="btn-save" onclick="saveData()">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+                Lưu Nháp Tạm
+            </button>
+            <button class="btn-print" onclick="window.print()">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                In PDF
+            </button>
+            <button class="btn-export" onclick="exportData()">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                Lưu File (Xuất)
+            </button>
+            <button class="btn-import" onclick="importData()">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                Mở File Nhập
+            </button>
+            <button class="btn-clear" onclick="clearData()">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                Khôi phục gốc
+            </button>
+        </div>
+
+        <div class="header">
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <img src="Asset-14logo-khoa-duy-blackok-1024x461.png" alt="Logo Công ty Khoa Duy" style="height: 65px; object-fit: contain;">
+                <div class="company-info">
+                    <h1>CÔNG TY TNHH CÔNG NGHỆ VÀ DỊCH VỤ KHOA DUY</h1>
+                    <p>Địa chỉ: 232 Phạm Xuân Ẩn, Phường Hoà Xuân, TP Đà Nẵng</p>
+                    <p>Điện thoại: 0917.796.022 | Website: www.smarthomedanang.vn</p>
+                </div>
+            </div>
+            <div class="quote-info">
+                <h2>BÁO GIÁ</h2>
+                <p>Mã BG: <span class="editable-cell" contenteditable="true">BG-20260420-JH</span></p>
+                <p>Ngày: <span class="editable-cell" contenteditable="true">20/04/2026</span></p>
+            </div>
+        </div>
+
+        <div class="client-section">
+            <div class="client-info">
+                <h3>THÔNG TIN KHÁCH HÀNG</h3>
+                <p><strong>Khách hàng:</strong> <span class="editable-cell" contenteditable="true" spellcheck="false">MRS. NGUYỄN THỊ KIỀU</span></p>
+                <p><strong>Dự án:</strong> <span class="editable-cell" contenteditable="true" spellcheck="false">Biệt thự JAY HOME</span></p>
+            </div>
+            <div class="client-info" style="text-align: right;">
+                <h3>HẠNG MỤC BÁO GIÁ</h3>
+                <p>Hệ thống công tắc điều khiển</p>
+                <p>Hệ thống đèn chiếu sáng, sưởi & Smart Home</p>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th width="4%" class="text-center">STT</th>
+                    <th width="12%">Mã SP</th>
+                    <th width="32%">Loại thiết bị / Diễn giải</th>
+                    <th width="6%" class="text-center">ĐVT</th>
+                    <th width="12%" class="text-center">Số lượng</th>
+                    <th width="15%" class="text-right">Đơn giá (VNĐ)</th>
+                    <th width="19%" class="text-right">Thành tiền (VNĐ)</th>
+                </tr>
+            </thead>
+            <tbody id="quote-body">
+                <tr class="category-row">
+                    <td colspan="7"><div class="editable-cell" contenteditable="true" spellcheck="false">I. PHẦN CÔNG TẮC ĐIỀU KHIỂN</div></td>
+                </tr>
+                <tr>
+                    <td class="text-center">1</td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">-</div></td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">Công tắc 1 chiều mặt đơn 10A</div></td>
+                    <td class="text-center">Bộ</td>
+                    <td class="text-center"><input type="number" min="0" class="qty" value="2"></td>
+                    <td class="text-right"><input type="number" min="0" class="price" value="120000"></td>
+                    <td class="text-right amount">0</td>
+                </tr>
+                <tr>
+                    <td class="text-center">2</td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">-</div></td>
+                    <td>
+                        <div class="editable-cell" contenteditable="true" spellcheck="false">Công tắc 1 chiều mặt đôi 10A</div>
+                        <span style="font-size:12px; color:#64748b; padding-left: 6px;">Ký hiệu: S(5,6), S(8,9), S(10,11)</span>
+                    </td>
+                    <td class="text-center">Bộ</td>
+                    <td class="text-center"><input type="number" min="0" class="qty" value="4"></td>
+                    <td class="text-right"><input type="number" min="0" class="price" value="160000"></td>
+                    <td class="text-right amount">0</td>
+                </tr>
+                <tr>
+                    <td class="text-center">3</td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">-</div></td>
+                    <td>
+                        <div class="editable-cell" contenteditable="true" spellcheck="false">Công tắc 1 chiều mặt ba 10A</div>
+                        <span style="font-size:12px; color:#64748b; padding-left: 6px;">Ký hiệu: S(2,3,4)</span>
+                    </td>
+                    <td class="text-center">Bộ</td>
+                    <td class="text-center"><input type="number" min="0" class="qty" value="1"></td>
+                    <td class="text-right"><input type="number" min="0" class="price" value="190000"></td>
+                    <td class="text-right amount">0</td>
+                </tr>
+                <tr>
+                    <td class="text-center">4</td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">-</div></td>
+                    <td>
+                        <div class="editable-cell" contenteditable="true" spellcheck="false">Công tắc 1 chiều 4 nút 10A</div>
+                        <span style="font-size:12px; color:#64748b; padding-left: 6px;">Ký hiệu: S(1,2,3,4)</span>
+                    </td>
+                    <td class="text-center">Bộ</td>
+                    <td class="text-center"><input type="number" min="0" class="qty" value="1"></td>
+                    <td class="text-right"><input type="number" min="0" class="price" value="220000"></td>
+                    <td class="text-right amount">0</td>
+                </tr>
+                <tr>
+                    <td class="text-center">5</td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">-</div></td>
+                    <td>
+                        <div class="editable-cell" contenteditable="true" spellcheck="false">Công tắc 2 chiều mặt đơn 10A</div>
+                        <span style="font-size:12px; color:#64748b; padding-left: 6px;">Ký hiệu: S1, S7, S12, S13, S14</span>
+                    </td>
+                    <td class="text-center">Bộ</td>
+                    <td class="text-center"><input type="number" min="0" class="qty" value="5"></td>
+                    <td class="text-right"><input type="number" min="0" class="price" value="135000"></td>
+                    <td class="text-right amount">0</td>
+                </tr>
+                
+                <tr class="category-row">
+                    <td colspan="7"><div class="editable-cell" contenteditable="true" spellcheck="false">II. HỆ THỐNG ĐÈN CHIẾU SÁNG & TRANG TRÍ</div></td>
+                </tr>
+                <tr>
+                    <td class="text-center">6</td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">-</div></td>
+                    <td>
+                        <div class="editable-cell" contenteditable="true" spellcheck="false">Đèn Downlight 9W âm trần</div>
+                        <div class="editable-cell" contenteditable="true" spellcheck="false" style="color: #ef4444; font-size: 12px; font-style: italic;">Vị trí: Phòng khách, Bếp</div>
+                    </td>
+                    <td class="text-center">Cái</td>
+                    <td class="text-center"><input type="number" min="0" class="qty" value="20"></td>
+                    <td class="text-right"><input type="number" min="0" class="price" value="180000"></td>
+                    <td class="text-right amount">0</td>
+                </tr>
+                <tr>
+                    <td class="text-center">7</td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">-</div></td>
+                    <td>
+                        <div class="editable-cell" contenteditable="true" spellcheck="false">Đèn Downlight 9W Chống Ẩm</div>
+                        <div class="editable-cell" contenteditable="true" spellcheck="false" style="color: #ef4444; font-size: 12px; font-style: italic;">Vị trí: WC, Logia</div>
+                    </td>
+                    <td class="text-center">Cái</td>
+                    <td class="text-center"><input type="number" min="0" class="qty" value="6"></td>
+                    <td class="text-right"><input type="number" min="0" class="price" value="210000"></td>
+                    <td class="text-right amount">0</td>
+                </tr>
+                <tr>
+                    <td class="text-center">8</td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">-</div></td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">Đèn Spotlight 9W (Chiếu điểm)</div></td>
+                    <td class="text-center">Cái</td>
+                    <td class="text-center"><input type="number" min="0" class="qty" value="8"></td>
+                    <td class="text-right"><input type="number" min="0" class="price" value="250000"></td>
+                    <td class="text-right amount">0</td>
+                </tr>
+                <tr>
+                    <td class="text-center">9</td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">-</div></td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">Đèn thanh ray nam châm</div></td>
+                    <td class="text-center">Cái</td>
+                    <td class="text-center"><input type="number" min="0" class="qty" value="4"></td>
+                    <td class="text-right"><input type="number" min="0" class="price" value="450000"></td>
+                    <td class="text-right amount">0</td>
+                </tr>
+                <tr>
+                    <td class="text-center">10</td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">-</div></td>
+                    <td>
+                        <div class="editable-cell" contenteditable="true" spellcheck="false">Đèn LED dây / Đèn tủ</div>
+                        <span style="font-size:12px; color:#64748b; padding-left: 6px;">Ký hiệu: J LED, LD1-LD4</span>
+                    </td>
+                    <td class="text-center">Mét</td>
+                    <td class="text-center"><input type="number" min="0" class="qty" value="50"></td>
+                    <td class="text-right"><input type="number" min="0" class="price" value="65000"></td>
+                    <td class="text-right amount">0</td>
+                </tr>
+                <tr>
+                    <td class="text-center">11</td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">-</div></td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">Đèn thả</div></td>
+                    <td class="text-center">Cái</td>
+                    <td class="text-center"><input type="number" min="0" class="qty" value="2"></td>
+                    <td class="text-right"><input type="number" min="0" class="price" value="1200000"></td>
+                    <td class="text-right amount">0</td>
+                </tr>
+                <tr>
+                    <td class="text-center">12</td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">-</div></td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">Đèn ốp trần</div></td>
+                    <td class="text-center">Cái</td>
+                    <td class="text-center"><input type="number" min="0" class="qty" value="4"></td>
+                    <td class="text-right"><input type="number" min="0" class="price" value="380000"></td>
+                    <td class="text-right amount">0</td>
+                </tr>
+                <tr>
+                    <td class="text-center">13</td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">-</div></td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">Đèn Tuýp 0.6m</div></td>
+                    <td class="text-center">Cái</td>
+                    <td class="text-center"><input type="number" min="0" class="qty" value="5"></td>
+                    <td class="text-right"><input type="number" min="0" class="price" value="110000"></td>
+                    <td class="text-right amount">0</td>
+                </tr>
+                <tr>
+                    <td class="text-center">14</td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">-</div></td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">Đèn sưởi WC</div></td>
+                    <td class="text-center">Cái</td>
+                    <td class="text-center"><input type="number" min="0" class="qty" value="2"></td>
+                    <td class="text-right"><input type="number" min="0" class="price" value="950000"></td>
+                    <td class="text-right amount">0</td>
+                </tr>
+
+                <tr class="category-row">
+                    <td colspan="7"><div class="editable-cell" contenteditable="true" spellcheck="false">III. THIẾT BỊ ĐIỀU KHIỂN THÔNG MINH</div></td>
+                </tr>
+                <tr>
+                    <td class="text-center">15</td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">-</div></td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">Bộ điều khiển hồng ngoại</div></td>
+                    <td class="text-center">Bộ</td>
+                    <td class="text-center"><input type="number" min="0" class="qty" value="2"></td>
+                    <td class="text-right"><input type="number" min="0" class="price" value="450000"></td>
+                    <td class="text-right amount">0</td>
+                </tr>
+                <tr>
+                    <td class="text-center">16</td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">-</div></td>
+                    <td>
+                        <div class="editable-cell" contenteditable="true" spellcheck="false">Cảm biến hiện diện</div>
+                        <div class="editable-cell" contenteditable="true" spellcheck="false" style="color: #ef4444; font-size: 12px; font-style: italic;">Vị trí: Phòng thay đồ, WC</div>
+                    </td>
+                    <td class="text-center">Bộ</td>
+                    <td class="text-center"><input type="number" min="0" class="qty" value="3"></td>
+                    <td class="text-right"><input type="number" min="0" class="price" value="680000"></td>
+                    <td class="text-right amount">0</td>
+                </tr>
+                <tr class="category-row">
+                    <td colspan="7"><div class="editable-cell" contenteditable="true" spellcheck="false">IV. HỆ THỐNG ĐỘNG CƠ RÈM</div></td>
+                </tr>
+                <tr>
+                    <td class="text-center">17</td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">-</div></td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">Động cơ rèm thông minh</div></td>
+                    <td class="text-center">Bộ</td>
+                    <td class="text-center"><input type="number" min="0" class="qty" value="4"></td>
+                    <td class="text-right"><input type="number" min="0" class="price" value="0"></td>
+                    <td class="text-right amount">0</td>
+                </tr>
+                <tr>
+                    <td class="text-center">18</td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">-</div></td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">Điều khiển từ xa (Remote đôi)</div></td>
+                    <td class="text-center">Cái</td>
+                    <td class="text-center"><input type="number" min="0" class="qty" value="2"></td>
+                    <td class="text-right"><input type="number" min="0" class="price" value="0"></td>
+                    <td class="text-right amount">0</td>
+                </tr>
+                <tr>
+                    <td class="text-center">19</td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">-</div></td>
+                    <td><div class="editable-cell" contenteditable="true" spellcheck="false">Thanh ray nhôm định hình rèm</div></td>
+                    <td class="text-center">Mét</td>
+                    <td class="text-center"><input type="number" min="0" class="qty" value="10"></td>
+                    <td class="text-right"><input type="number" min="0" class="price" value="0"></td>
+                    <td class="text-right amount">0</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="add-actions" style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <button class="btn-add" onclick="addRow()">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                Thêm thiết bị mới
+            </button>
+            <button class="btn-add" onclick="addCategory()">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Thêm danh mục mới
+            </button>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 30px;">
+            <div class="editable-cell" contenteditable="true" spellcheck="false" style="font-size: 13px; color: #64748b; line-height: 1.6; flex: 1; border: 1px dashed transparent; min-height: 50px;">
+                <strong>Ghi chú:</strong><br>
+                1. Mọi nội dung text trong bảng và thông tin Khách Hàng đều có thể click chuột vào để sửa trực tiếp.<br>
+                2. Rất an toàn: Bạn có thể ấn nút "Lưu Form" để lưu trữ lại bản nháp không bị mất khi nhỡ tay tắt web.<br>
+                3. Đơn giá chưa bao gồm thuế VAT (10%).<br>
+            </div>
+            <div class="total-section" style="margin-top: 0">
+                <div class="total-box">
+                    <div class="total-row" style="align-items: center;">
+                        <span>Cộng tiền hàng:</span>
+                        <span class="currency" id="subtotal">0</span>
+                    </div>
+                    <div class="total-row" style="align-items: center;">
+                        <span>Phí lắp đặt (<span class="editable-cell" id="installPercent" contenteditable="true" spellcheck="false" style="min-width: 25px; text-align: center; border: 1px dashed #cbd5e1; border-radius: 4px; padding: 0 4px; margin: 0 2px;">10</span>%):</span>
+                        <span class="currency" id="installationFee">0</span>
+                    </div>
+                    <div class="total-row" style="align-items: center;">
+                        <span>Chi phí vận chuyển:</span>
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <input type="number" id="transportFee" min="0" value="0" style="width: 105px; max-width: 100%; text-align: right; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; font-family: inherit; font-size: 14px; transition: 0.2s; outline: none;">
+                        </div>
+                    </div>
+                    <div class="total-row grand-total">
+                        <span>TỔNG CỘNG:</span>
+                        <span class="currency" id="grandtotal">0 VNĐ</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            Hệ thống Báo Giá Trực Quan phiên bản tự lưu. Dữ liệu sẽ được bảo vệ ngay trên trình duyệt của bạn.
+        </div>
+    </div>
+
+    <script>
+        function formatMoney(amount) {
+            return new Intl.NumberFormat('vi-VN').format(Math.round(amount));
+        }
+
+        function updateSTT() {
+            let stt = 1;
+            const trs = document.querySelectorAll('#quote-body tr:not(.category-row)');
+            trs.forEach(tr => {
+                if(!tr.classList.contains('deleted-row')) {
+                    const sttTd = tr.querySelector('td:first-child');
+                    if(sttTd) sttTd.textContent = stt;
+                    stt++;
+                }
+            });
+        }
+
+        function calculate() {
+            let trs = document.querySelectorAll('#quote-body tr:not(.category-row)');
+            let subtotal = 0;
+
+            trs.forEach(tr => {
+                if(tr.classList.contains('deleted-row')) return;
+
+                let qtyInput = tr.querySelector('.qty');
+                let priceInput = tr.querySelector('.price');
+                let amountTd = tr.querySelector('.amount');
+
+                let qty = qtyInput.value ? parseFloat(qtyInput.value) : 0;
+                let price = priceInput.value ? parseFloat(priceInput.value) : 0;
+                
+                let amount = qty * price;
+
+                if(amount > 0) {
+                    amountTd.textContent = formatMoney(amount);
+                } else {
+                    amountTd.textContent = '0';
+                }
+                
+                subtotal += amount;
+            });
+
+            // Lấy % lắp đặt
+            let percentText = document.getElementById('installPercent').textContent.trim();
+            // Xử lý cả dấu phẩy nếu người dùng nhập kiểu việt (vd 5,5)
+            let percent = parseFloat(percentText.replace(/,/g, '.'));
+            if(isNaN(percent)) percent = 0;
+            
+            let installationFee = subtotal * (percent / 100);
+            
+            // Lấy Phí vận chuyển
+            let transportInput = document.getElementById('transportFee');
+            let transportFee = 0;
+            if(transportInput && transportInput.value) {
+                transportFee = parseFloat(transportInput.value);
+                if(isNaN(transportFee)) transportFee = 0;
+            }
+
+            let grandtotal = subtotal + installationFee + transportFee;
+
+            document.getElementById('subtotal').textContent = formatMoney(subtotal);
+            document.getElementById('installationFee').textContent = formatMoney(installationFee);
+            document.getElementById('grandtotal').textContent = formatMoney(grandtotal) + ' VNĐ';
+
+            updateSTT();
+        }
+
+        function saveData() {
+            // Gán giá trị value cho thẻ input để innerHTML cập nhật chính xác state hiện tại
+            document.querySelectorAll('#quote-body input[type="number"]').forEach(el => {
+                el.setAttribute('value', el.value);
+            });
+            const data = {
+                html: document.getElementById('quote-body').innerHTML,
+                outsideData: Array.from(document.querySelectorAll('.editable-cell:not(#quote-body .editable-cell)')).map(el => el.innerHTML),
+                outsideInputs: Array.from(document.querySelectorAll('.total-box input')).map(el => el.value)
+            };
+            localStorage.setItem('JayHomeQuoteDataHTML_v2', JSON.stringify(data));
+            
+            const btn = document.querySelector('.btn-save');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '✅ Đã lưu dữ liệu!';
+            setTimeout(() => { btn.innerHTML = originalText; }, 2000);
+        }
+
+        function loadData() {
+            let v2Loaded = false;
+            let v2HasOutside = false;
+            
+            // Ưu tiên load dựa theo phiên bản DOM đầy đủ (có support các thẻ tự tạo thêm)
+            const dataStr = localStorage.getItem('JayHomeQuoteDataHTML_v2');
+            if(dataStr) {
+                try {
+                    const data = JSON.parse(dataStr);
+                    if(data.html) {
+                        document.getElementById('quote-body').innerHTML = data.html;
+                        v2Loaded = true;
+                        if(data.outsideData) {
+                            v2HasOutside = true;
+                            const outsideEditables = document.querySelectorAll('.editable-cell:not(#quote-body .editable-cell)');
+                            outsideEditables.forEach((el, index) => {
+                                if(data.outsideData[index] !== undefined) el.innerHTML = data.outsideData[index];
+                            });
+                        }
+                        if(data.outsideInputs) {
+                            const outsideIns = document.querySelectorAll('.total-box input');
+                            outsideIns.forEach((el, index) => {
+                                if(data.outsideInputs[index] !== undefined) el.value = data.outsideInputs[index];
+                            });
+                        }
+                    }
+                } catch(e) {}
+            }
+            
+            // Fallback backward compatibility hoặc vá lỗi thất thoát dữ liệu ngoài form do bản update trước
+            if(!v2Loaded || !v2HasOutside) {
+                const oldDataStr = localStorage.getItem('JayHomeQuoteData');
+                if(oldDataStr) {
+                    try {
+                        const data = JSON.parse(oldDataStr);
+                        const allEditables = document.querySelectorAll('.editable-cell');
+                        if(data.editables) {
+                            allEditables.forEach((el, index) => {
+                                // Nếu v2Loaded là true, chỉ vá các cell ngoại vi (Date, Client...). Nếu false, phục hồi tất cả
+                                if(data.editables[index] !== undefined && (!v2Loaded || !el.closest('#quote-body'))) {
+                                    el.innerHTML = data.editables[index];
+                                }
+                            });
+                        }
+                        
+                        if(!v2Loaded) { // Phục hồi full V1
+                            const inputs = document.querySelectorAll('input[type="number"]');
+                            if(data.inputs) {
+                                inputs.forEach((el, index) => {
+                                    if(data.inputs[index] !== undefined) el.value = data.inputs[index];
+                                });
+                            }
+                            const normalTrs = document.querySelectorAll('#quote-body tr:not(.category-row)');
+                            if(data.deletedRows) {
+                                normalTrs.forEach((tr, index) => {
+                                    if(data.deletedRows[index]) tr.classList.add('deleted-row');
+                                });
+                            }
+                        }
+                    } catch(e) {}
+                }
+            }
+        }
+
+        function clearData() {
+            if(confirm("Bạn có chắc chắn muốn khôi phục bảng giá về mặc định lúc ban đầu? Dữ liệu bạn vừa sửa sẽ bị xóa sạch.")) {
+                localStorage.removeItem('JayHomeQuoteDataHTML_v2');
+                localStorage.removeItem('JayHomeQuoteData');
+                location.reload();
+            }
+        }
+
+        function exportData() {
+            saveData(); // Cập nhật local storage mới nhất 
+            const dataStr = localStorage.getItem('JayHomeQuoteDataHTML_v2');
+            if(!dataStr) return alert("Không có dữ liệu hợp lệ để xuất!");
+
+            // Lấy tên KH làm tên file
+            let clientName = 'KhachHang';
+            try {
+                // Lấy thẻ Khách hàng thường là thẻ editable-cell nằm trong .client-info đầu tiên
+                const editableCells = document.querySelectorAll('.client-info .editable-cell');
+                if(editableCells.length > 0 && editableCells[0].textContent) {
+                    clientName = editableCells[0].textContent.trim().replace(/[^a-z0-9A-Z_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s]/g, '').replace(/\s+/g, '_');
+                }
+            } catch(e) {}
+            
+            const dateStr = new Date().toISOString().slice(0, 10);
+            const fileName = `CauHinh_${clientName}_${dateStr}.json`;
+
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = e => {
+                const file = e.target.files[0];
+                if(!file) return;
+                const reader = new FileReader();
+                reader.onload = event => {
+                    try {
+                        const content = event.target.result;
+                        const data = JSON.parse(content); 
+                        if(data.html !== undefined) {
+                            localStorage.setItem('JayHomeQuoteDataHTML_v2', content);
+                            alert("✅ Đã chèn dữ liệu cấu hình thành công! Bảng giá sẽ tự động tải lại.");
+                            location.reload();
+                        } else {
+                            alert("❌ File cấu hình không chứa dữ liệu bảng giá hợp lệ!");
+                        }
+                    } catch(err) {
+                        alert("❌ File bị lỗi định dạng hoặc không phải là file JSON của phần mềm báo giá này.");
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function deleteRow(btn) {
+            if(confirm("Bạn có chắc chắn muốn xóa thiết bị này khỏi danh sách báo giá?")) {
+                const tr = btn.closest('tr');
+                tr.classList.add('deleted-row');
+                calculate();
+                saveData(); // lưu lại trạng thái đã xóa
+            }
+        }
+
+        function addRow() {
+            const tbody = document.getElementById('quote-body');
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="text-center"></td>
+                <td><div class="editable-cell" contenteditable="true" spellcheck="false">-</div></td>
+                <td><div class="editable-cell" contenteditable="true" spellcheck="false">Thiết bị mới</div></td>
+                <td class="text-center">Cái</td>
+                <td class="text-center"><input type="number" min="0" class="qty" value="1"></td>
+                <td class="text-right"><input type="number" min="0" class="price" value="0"></td>
+                <td class="text-right amount">0</td>
+                <td class="text-center action-col">
+                    <button class="btn-delete" onclick="deleteRow(this)" title="Xóa thiết bị này" tabindex="-1">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+            calculate();
+            saveData();
+        }
+
+        function addCategory() {
+            const tbody = document.getElementById('quote-body');
+            const tr = document.createElement('tr');
+            tr.className = 'category-row';
+            tr.innerHTML = `
+                <td colspan="8">
+                    <div class="category-header-wrap">
+                        <div class="editable-cell" contenteditable="true" spellcheck="false">DANH MỤC MỚI (CLICK ĐỂ SỬA)</div>
+                        <div class="print-hide" style="display: flex;">
+                            <button class="btn-cat-action btn-cat-add" onclick="addRowToCategory(this)" tabindex="-1">+ Thêm TB</button>
+                            <button class="btn-cat-action btn-cat-del" onclick="deleteCategory(this)" tabindex="-1">Xóa DM</button>
+                        </div>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(tr);
+            calculate();
+            saveData();
+        }
+
+        function addRowToCategory(btn) {
+            const currentCatRow = btn.closest('tr.category-row');
+            let nextRow = currentCatRow.nextElementSibling;
+            while(nextRow && !nextRow.classList.contains('category-row')) {
+                nextRow = nextRow.nextElementSibling;
+            }
+            
+            const tbody = document.getElementById('quote-body');
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="text-center"></td>
+                <td><div class="editable-cell" contenteditable="true" spellcheck="false">-</div></td>
+                <td><div class="editable-cell" contenteditable="true" spellcheck="false">Thiết bị mới</div></td>
+                <td class="text-center">Cái</td>
+                <td class="text-center"><input type="number" min="0" class="qty" value="1"></td>
+                <td class="text-right"><input type="number" min="0" class="price" value="0"></td>
+                <td class="text-right amount">0</td>
+                <td class="text-center action-col">
+                    <button class="btn-delete" onclick="deleteRow(this)" title="Xóa thiết bị này" tabindex="-1">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                </td>
+            `;
+            
+            if(nextRow) {
+                tbody.insertBefore(tr, nextRow);
+            } else {
+                tbody.appendChild(tr);
+            }
+            
+            calculate();
+            saveData();
+        }
+
+        function deleteCategory(btn) {
+            if(confirm("CẢNH BÁO: Rất nguy hiểm! Bạn có chắc chắn muốn xóa TOÀN BỘ Danh Mục này (gồm cả các thiết bị bên trong)?")) {
+                const currentCatRow = btn.closest('tr.category-row');
+                let nextRow = currentCatRow.nextElementSibling;
+                const rowsToDelete = [currentCatRow];
+                
+                while(nextRow && !nextRow.classList.contains('category-row')) {
+                    rowsToDelete.push(nextRow);
+                    nextRow = nextRow.nextElementSibling;
+                }
+                
+                rowsToDelete.forEach(row => row.classList.add('deleted-row'));
+                calculate();
+                saveData();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Tải lại state bảng trước
+            loadData();
+
+            // Nếu bảng chưa có cấu trúc Cột Xóa (do tải file trắng gốc hoặc bảng v1) sẽ tiến hành tiêm
+            const theadTr = document.querySelector('table thead tr');
+            if(!theadTr.querySelector('.action-col')) {
+                const thAction = document.createElement('th');
+                thAction.className = 'text-center action-col';
+                thAction.width = '5%';
+                thAction.innerHTML = '';
+                theadTr.appendChild(thAction);
+
+                const ths = theadTr.querySelectorAll('th');
+                if(ths.length >= 8) {
+                    ths[1].width = '11%';
+                    ths[2].width = '31%';
+                    ths[4].width = '11%';
+                    ths[5].width = '14%';
+                    ths[6].width = '18%';
+                }
+            }
+
+            const trs = document.querySelectorAll('#quote-body tr');
+            trs.forEach(tr => {
+                // Tiêm cột action-col
+                if(!tr.querySelector('.action-col')) {
+                    const td = document.createElement('td');
+                    td.className = 'text-center action-col';
+                    if(tr.classList.contains('category-row')) {
+                        const cTd = tr.querySelector('td');
+                        if(cTd) cTd.colSpan = 8;
+                    } else {
+                        td.innerHTML = `<button class="btn-delete" onclick="deleteRow(this)" title="Xóa thiết bị này" tabindex="-1">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>`;
+                        tr.appendChild(td);
+                    }
+                }
+
+                // Tiêm giao diện Thêm/Xóa danh mục
+                if(tr.classList.contains('category-row')) {
+                    const td = tr.querySelector('td');
+                    if(!td.querySelector('.category-header-wrap')) {
+                        const cellContent = td.innerHTML;
+                        td.innerHTML = `
+                            <div class="category-header-wrap">
+                                ${cellContent}
+                                <div class="print-hide" style="display: flex;">
+                                    <button class="btn-cat-action btn-cat-add" onclick="addRowToCategory(this)" tabindex="-1">+ Thêm TB</button>
+                                    <button class="btn-cat-action btn-cat-del" onclick="deleteCategory(this)" tabindex="-1">Xóa DM</button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+            });
+
+            // Gắn event tự động tính tổng tiền thông qua cơ chế Event Delegation 
+            // Giúp tính toán cho cả các dòng mới Add mà không cần khai báo lại addEventListener
+            const tbody = document.getElementById('quote-body');
+            tbody.addEventListener('input', function(e) {
+                if(e.target && e.target.type === 'number') calculate();
+            });
+            tbody.addEventListener('change', function(e) {
+                if(e.target && e.target.type === 'number') calculate();
+            });
+            
+            // Lắng nghe thay đổi ở khu vực tổng kết (% phí lắp đặt, phí vận chuyển)
+            const totalBox = document.querySelector('.total-box');
+            if(totalBox) {
+                totalBox.addEventListener('input', calculate);
+            }
+            
+            calculate();
+        });
+    </script>
+</body>
+</html>

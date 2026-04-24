@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Admin - Catalog</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0f172a;--card:#1e293b;--border:#334155;--accent:#3b82f6;--accent2:#6366f1;--green:#10b981;--red:#ef4444;--yellow:#f59e0b;--text:#e2e8f0;--muted:#94a3b8}
+body{font-family:'Be Vietnam Pro','Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#0f172a,#1e1b4b,#0f172a)}
+.login-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:40px;width:380px;box-shadow:0 25px 50px rgba(0,0,0,.5)}
+.login-box h1{text-align:center;font-size:24px;margin-bottom:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.login-box p{text-align:center;color:var(--muted);font-size:13px;margin-bottom:24px}
+.login-box input{width:100%;padding:12px 16px;border:1px solid var(--border);border-radius:8px;background:#0f172a;color:var(--text);font-size:14px;outline:none;margin-bottom:16px}
+.login-box input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,.2)}
+.login-box button{width:100%;padding:12px;border:none;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:600;font-size:14px;cursor:pointer}
+.login-err{color:var(--red);font-size:12px;text-align:center;margin-top:8px;min-height:18px}
+.app{display:none}
+.topbar{background:var(--card);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:50}
+.topbar h1{font-size:18px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.topbar .actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{padding:8px 16px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:5px;color:#fff;transition:.2s}
+.btn:hover{transform:translateY(-1px)}.btn-primary{background:var(--accent)}.btn-green{background:var(--green)}.btn-red{background:var(--red)}.btn-purple{background:var(--accent2)}.btn-yellow{background:var(--yellow);color:#000}.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted)}.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+.main{padding:24px 32px;max-width:1500px;margin:0 auto}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px}
+.stat-card .label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.stat-card .value{font-size:26px;font-weight:800}
+.stat-card .value.blue{color:var(--accent)}.stat-card .value.green{color:var(--green)}.stat-card .value.purple{color:var(--accent2)}
+.toolbar{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.search-box{flex:1;min-width:200px;position:relative}
+.search-box input{width:100%;padding:10px 16px 10px 36px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);font-size:14px;outline:none}
+.search-box input:focus{border-color:var(--accent)}.search-box::before{content:'🔍';position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px}
+.cat-filter select{padding:10px 14px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text);font-size:13px;outline:none}
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{background:#0f172a;padding:10px 12px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);text-align:left;font-weight:600}
+td{padding:10px 12px;border-top:1px solid var(--border);font-size:13px}
+tr:hover td{background:rgba(59,130,246,.04)}
+.sku-badge{background:rgba(59,130,246,.15);color:var(--accent);padding:3px 8px;border-radius:5px;font-weight:600;font-size:12px}
+.cat-badge{background:rgba(99,102,241,.15);color:var(--accent2);padding:3px 8px;border-radius:5px;font-size:11px;font-weight:500}
+.brand-badge{background:rgba(245,158,11,.15);color:var(--yellow);padding:3px 8px;border-radius:5px;font-size:11px;font-weight:500}
+.thumb{width:40px;height:40px;border-radius:6px;object-fit:cover;border:1px solid var(--border);cursor:pointer;transition:.2s}
+.thumb:hover{transform:scale(2.5);z-index:10;position:relative;box-shadow:0 8px 20px rgba(0,0,0,.5)}
+.no-img{width:40px;height:40px;border-radius:6px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--muted)}
+.price{font-weight:600;font-variant-numeric:tabular-nums}.price.list{color:var(--muted)}.price.input{color:var(--yellow)}.price.sell{color:var(--green)}
+.row-actions{display:flex;gap:4px}.row-actions .btn{padding:5px 10px;font-size:11px}
+.empty-state{text-align:center;padding:50px;color:var(--muted)}.empty-state .icon{font-size:40px;margin-bottom:8px}
+input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent);cursor:pointer}
+.sel-bar{display:none;background:linear-gradient(135deg,var(--accent),var(--accent2));padding:12px 24px;border-radius:10px;margin-bottom:16px;align-items:center;justify-content:space-between;color:#fff;font-weight:600;font-size:14px;animation:slideIn .3s}
+.sel-bar.active{display:flex}
+.sel-bar .btn{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3)}
+.sel-bar .btn:hover{background:rgba(255,255,255,.35)}
+.sel-bar .btn.btn-red{background:#ef4444;border-color:#ef4444;color:#fff;font-weight:700}
+.sel-bar .btn.btn-red:hover{background:#dc2626;border-color:#dc2626}
+@keyframes slideIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.active{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;width:480px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 25px 50px rgba(0,0,0,.5)}
+.modal h2{font-size:18px;margin-bottom:16px}
+.modal label{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;margin-top:14px}
+.modal label:first-of-type{margin-top:0}
+.modal input,.modal textarea,.modal select{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;background:#0f172a;color:var(--text);font-size:13px;outline:none;font-family:inherit}
+.modal input:focus,.modal textarea:focus{border-color:var(--accent)}
+.modal textarea{resize:vertical;min-height:50px}
+.modal .btn-row{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+.modal .price-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.upload-zone{border:2px dashed var(--border);border-radius:12px;padding:28px;text-align:center;cursor:pointer;transition:.2s;margin-top:8px}
+.upload-zone:hover{border-color:var(--accent);background:rgba(59,130,246,.05)}
+.upload-zone .icon{font-size:32px;margin-bottom:6px}.upload-zone p{font-size:12px;color:var(--muted)}
+.upload-status{margin-top:10px;padding:9px 12px;border-radius:8px;font-size:12px;font-weight:500;display:none}
+.upload-status.info{display:block;background:rgba(59,130,246,.1);color:var(--accent)}
+.upload-status.ok{display:block;background:rgba(16,185,129,.1);color:var(--green)}
+.upload-status.err{display:block;background:rgba(239,68,68,.1);color:var(--red)}
+.upload-progress{display:none;margin-top:12px;padding:12px;border:1px solid var(--border);border-radius:12px;background:rgba(15,23,42,.72)}
+.upload-progress.active{display:block}
+.upload-progress-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;font-size:12px}
+.upload-progress-label{font-weight:700;color:var(--text)}
+.upload-progress-percent{font-variant-numeric:tabular-nums;color:var(--muted)}
+.upload-progress-bar{height:10px;border-radius:999px;background:#0f172a;border:1px solid var(--border);overflow:hidden}
+.upload-progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .25s ease}
+.upload-progress-steps{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.upload-step{padding:5px 9px;border-radius:999px;font-size:11px;color:var(--muted);background:rgba(148,163,184,.12);border:1px solid transparent}
+.upload-step.active{color:#fff;background:rgba(59,130,246,.2);border-color:rgba(59,130,246,.35)}
+.upload-step.done{color:#d1fae5;background:rgba(16,185,129,.16);border-color:rgba(16,185,129,.35)}
+.upload-spinner{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.24);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;vertical-align:-2px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;color:#fff;z-index:200;transform:translateY(100px);opacity:0;transition:.3s}
+.toast.show{transform:translateY(0);opacity:1}.toast.ok{background:var(--green)}.toast.err{background:var(--red)}
+</style>
+</head>
+<body>
+<div class="login-wrap" id="loginPage">
+<div class="login-box"><h1>🔐 Admin Panel</h1><p>Quản lý Catalog Sản Phẩm SmartHome</p>
+<input type="password" id="loginPass" placeholder="Nhập mật khẩu..." autofocus>
+<button onclick="doLogin()">Đăng Nhập</button><div class="login-err" id="loginErr"></div></div></div>
+
+<div class="app" id="appPage">
+<div class="topbar"><h1>📦 Catalog Admin</h1>
+<div class="actions">
+<button class="btn btn-purple" onclick="openUploadModal()">📤 Upload AI</button>
+<button class="btn btn-green" onclick="openProductModal()">➕ Thêm SP</button>
+<button class="btn btn-yellow" onclick="openCatCreateModal()">🏷️ Tạo danh mục</button>
+<a href="/baogia" class="btn btn-ghost">← Báo Giá</a>
+<button class="btn btn-ghost" onclick="logout()">Đăng Xuất</button>
+</div></div>
+<div class="main">
+<div class="stats">
+<div class="stat-card"><div class="label">Tổng sản phẩm</div><div class="value blue" id="statTotal">0</div></div>
+<div class="stat-card"><div class="label">Có giá bán</div><div class="value green" id="statPriced">0</div></div>
+<div class="stat-card"><div class="label">Chưa có giá</div><div class="value purple" id="statNoPriced">0</div></div>
+<div class="cat-filter"><select id="brandFilter" onchange="applyFilter()"><option value="">-- Tất cả thương hiệu --</option></select></div>
+</div>
+<div class="sel-bar" id="selBar"><span id="selCount">0 sản phẩm đã chọn</span>
+<div style="display:flex;gap:8px">
+<button class="btn" onclick="setCategoryBulk()">🏷️ Gán danh mục</button>
+<button class="btn" onclick="setBrandBulk()">🏢 Gán thương hiệu</button>
+<button class="btn btn-red" id="btnDeleteBulk" onclick="deleteBulk()">🗑️ Xóa đã chọn</button>
+<button class="btn" onclick="exportToQuote()">📋 Xuất sang Báo Giá</button>
+<button class="btn" onclick="clearSelection()">✕ Bỏ chọn</button>
+</div></div>
+<div class="toolbar">
+<div class="search-box"><input type="text" id="searchInput" placeholder="Tìm theo Mã SP hoặc Mô tả..."></div>
+<div class="cat-filter"><select id="catFilter" onchange="applyFilter()"><option value="">-- Tất cả danh mục --</option></select></div>
+<button class="btn btn-primary" onclick="loadProducts()">🔄</button>
+<div class="cat-filter"><select id="brandFilter" onchange="applyFilter()"><option value="">-- Tất cả thương hiệu --</option></select></div>
+</div>
+<div class="table-wrap"><table>
+<thead><tr>
+<th width="3%"><input type="checkbox" id="checkAll" onchange="toggleAll(this.checked)"></th>
+<th width="3%">ID</th><th width="4%">Ảnh</th><th width="9%">Mã SP</th><th width="18%">Mô tả</th>
+<th width="9%">Danh mục</th><th width="8%">Thương hiệu</th><th width="9%">Giá niêm yết</th><th width="9%">Giá nhập</th>
+<th width="9%">Giá bán</th><th width="9%">Thao tác</th>
+</tr></thead>
+<tbody id="tableBody"></tbody>
+</table>
+<div class="empty-state" id="emptyState" style="display:none"><div class="icon">📭</div><p>Chưa có sản phẩm</p></div>
+</div></div></div>
+
+<div class="modal-overlay" id="productModal"><div class="modal">
+<h2 id="modalTitle">➕ Thêm Sản Phẩm</h2><input type="hidden" id="editId">
+<label>Mã SP (SKU)</label><input type="text" id="fSku" placeholder="VD: CT-2C-10A">
+<label>Mô tả</label><textarea id="fDesc" placeholder="Mô tả sản phẩm"></textarea>
+<label>Chi tiết / Thông số kỹ thuật</label><textarea id="fDetails" placeholder="Thông số kỹ thuật..."></textarea>
+<label>Danh mục</label>
+<div style="display:flex;gap:8px"><input type="text" id="fCat" list="catList" placeholder="Chọn hoặc nhập mới..."><datalist id="catList"></datalist></div>
+<label>Thương hiệu</label>
+<input type="text" id="fBrand" list="brandList" placeholder="VD: Lumi, Xiaomi, Aqara..."><datalist id="brandList"></datalist>
+<label>URL Hình ảnh</label>
+<div style="display:flex;gap:8px;align-items:center"><input type="text" id="fImage" placeholder="https://... hoặc để trống"><img id="fImagePreview" src="" style="width:40px;height:40px;border-radius:6px;object-fit:cover;display:none;border:1px solid var(--border)"></div>
+<div class="price-grid">
+<div><label>Giá niêm yết</label><input type="number" id="fListPrice" value="0" min="0"></div>
+<div><label>Giá nhập</label><input type="number" id="fInputPrice" value="0" min="0"></div>
+<div><label>Giá bán</label><input type="number" id="fSellPrice" value="0" min="0"></div>
+</div>
+<div class="btn-row"><button class="btn btn-ghost" onclick="closeProductModal()">Hủy</button>
+<button class="btn btn-green" onclick="saveProduct()">💾 Lưu</button></div>
+</div></div>
+
+<div class="modal-overlay" id="uploadModal"><div class="modal">
+<h2>📤 Upload AI</h2><p style="color:var(--muted);font-size:12px;margin-bottom:14px">Upload file báo giá (Excel/PDF). Gemini AI sẽ tự động phân tích.</p>
+<label style="display:block;margin-bottom:6px;font-size:13px;font-weight:600">Ghi thương hiệu (Mặc định)</label>
+<input type="text" id="uploadBrand" placeholder="VD: Lumi, Panasonic... (AI sẽ dùng tên này)" style="width:100%;padding:8px;border:1px solid var(--border-color);border-radius:4px;margin-bottom:14px">
+<div class="upload-zone" id="uploadZone" onclick="document.getElementById('uploadFile').click()">
+<div class="icon">📁</div><p>Kéo thả hoặc click chọn file (.xlsx, .csv, .pdf)</p></div>
+<input type="file" id="uploadFile" accept=".pdf,.xlsx,.csv" style="display:none">
+<div class="upload-status" id="uploadStatus"></div>
+<div class="upload-progress" id="uploadProgress">
+<div class="upload-progress-head">
+<span class="upload-progress-label" id="uploadProgressLabel">Sẵn sàng upload</span>
+<span class="upload-progress-percent" id="uploadProgressPercent">0%</span>
+</div>
+<div class="upload-progress-bar"><div class="upload-progress-fill" id="uploadProgressFill"></div></div>
+<div class="upload-progress-steps">
+<span class="upload-step" id="stepPick">1. Chọn file</span>
+<span class="upload-step" id="stepSend">2. Tải lên</span>
+<span class="upload-step" id="stepAi">3. AI phân tích</span>
+<span class="upload-step" id="stepDone">4. Hoàn tất</span>
+</div>
+</div>
+<div class="btn-row"><button class="btn btn-ghost" onclick="closeUploadModal()">Đóng</button>
+<button class="btn btn-purple" id="btnUpload" onclick="doUpload()">🚀 Phân tích</button></div>
+</div></div>
+
+<div class="modal-overlay" id="catModal"><div class="modal">
+<h2>🏷️ Gán danh mục hàng loạt</h2>
+<p style="color:var(--muted);font-size:12px;margin-bottom:12px" id="bulkCatInfo"></p>
+<label>Chọn hoặc nhập danh mục mới</label>
+<input type="text" id="bulkCat" list="catList2" placeholder="VD: Công tắc, Đèn chiếu sáng...">
+<datalist id="catList2"></datalist>
+<div class="btn-row"><button class="btn btn-ghost" onclick="closeCatModal()">Hủy</button>
+<button class="btn btn-purple" id="btnApplyCat" onclick="applyBulkCategory()">✅ Áp dụng</button></div>
+</div></div>
+
+<div class="modal-overlay" id="brandModal"><div class="modal">
+<h2>🏢 Gán thương hiệu hàng loạt</h2>
+<p style="color:var(--muted);font-size:12px;margin-bottom:12px" id="bulkBrandInfo"></p>
+<label>Chọn hoặc nhập thương hiệu mới</label>
+<input type="text" id="bulkBrand" list="brandList2" placeholder="VD: Lumi, Rạng Đông...">
+<datalist id="brandList2"></datalist>
+<div class="btn-row"><button class="btn btn-ghost" onclick="closeBrandModal()">Hủy</button>
+<button class="btn btn-purple" id="btnApplyBrand" onclick="applyBulkBrand()">✅ Áp dụng</button></div>
+</div></div>
+
+<div class="modal-overlay" id="catCreateModal"><div class="modal">
+<h2>🏷️ Quản lý Danh mục</h2>
+<div id="catListDisplay" style="margin-bottom:16px"></div>
+<label>Tạo danh mục mới</label>
+<div style="display:flex;gap:8px"><input type="text" id="newCatName" placeholder="Nhập tên danh mục..."><button class="btn btn-green" onclick="createCategory()" style="white-space:nowrap">➕ Tạo</button></div>
+<div class="btn-row"><button class="btn btn-ghost" onclick="closeCatCreateModal()">Đóng</button></div>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API=location.origin+'/api';
+let allProducts=[],selected=new Set(),categories=[];
+const BRAND_FILTER_PLACEHOLDER='-- T\u1ea5t c\u1ea3 th\u01b0\u01a1ng hi\u1ec7u --';
+
+function normalizeBrandFilter(){
+const stray=document.querySelector('.stats #brandFilter');
+if(stray&&stray.closest('.cat-filter'))stray.closest('.cat-filter').remove();
+const toolbar=document.querySelector('.toolbar');
+if(!toolbar)return;
+let brandFilter=toolbar.querySelector('#brandFilter');
+if(!brandFilter){
+const wrap=document.createElement('div');
+wrap.className='cat-filter';
+wrap.innerHTML='<select id="brandFilter" onchange="applyFilter()"><option value="">'+BRAND_FILTER_PLACEHOLDER+'</option></select>';
+const refreshBtn=toolbar.querySelector('.btn.btn-primary');
+if(refreshBtn)toolbar.insertBefore(wrap,refreshBtn);else toolbar.appendChild(wrap);
+brandFilter=wrap.querySelector('#brandFilter');
+}
+if(brandFilter&&brandFilter.options.length)brandFilter.options[0].textContent=BRAND_FILTER_PLACEHOLDER;
+}
+
+function doLogin(){
+const p=document.getElementById('loginPass').value;
+fetch(API+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:p})})
+.then(r=>{if(!r.ok)throw 0;return r.json()}).then(()=>{sessionStorage.setItem('auth','1');showApp()})
+.catch(()=>document.getElementById('loginErr').textContent='❌ Sai mật khẩu!');}
+document.getElementById('loginPass').onkeydown=e=>{if(e.key==='Enter')doLogin()};
+function showApp(){document.getElementById('loginPage').style.display='none';document.getElementById('appPage').style.display='block';normalizeBrandFilter();loadProducts();loadCategories()}
+function logout(){sessionStorage.removeItem('auth');location.reload()}
+if(sessionStorage.getItem('auth')==='1')showApp();
+
+function fmt(n){return new Intl.NumberFormat('vi-VN').format(Math.round(n||0))}
+function esc(s){return s?s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;').replace(/"/g,'&quot;'):''}
+
+function loadCategories(){
+fetch(API+'/categories').then(r=>r.json()).then(d=>{
+categories=d;
+['catFilter','catList','catList2'].forEach(id=>{
+const el=document.getElementById(id);
+if(id==='catFilter'){const v=el.value;el.innerHTML='<option value="">-- Tất cả danh mục --</option>';d.forEach(c=>{el.innerHTML+=`<option value="${esc(c)}">${esc(c)}</option>`});el.value=v}
+else{el.innerHTML='';d.forEach(c=>{el.innerHTML+=`<option value="${esc(c)}">`})}
+})}).catch(()=>{})}
+
+function loadProducts(){
+fetch(API+'/products').then(r=>r.json()).then(d=>{allProducts=d;applyFilter();updateStats(d);loadCategories();loadBrands()}).catch(()=>toast('Không kết nối backend!','err'))}
+
+function removeProductsFromUI(ids){
+const idSet=new Set(ids.map(id=>Number(id)));
+allProducts=allProducts.filter(p=>!idSet.has(Number(p.id)));
+idSet.forEach(id=>selected.delete(id));
+applyFilter();
+updateStats(allProducts);
+loadCategories();
+loadBrands();
+const checkAll=document.getElementById('checkAll');
+if(checkAll)checkAll.checked=false;
+}
+
+function loadBrands(){
+const brands=[...new Set(allProducts.map(p=>p.brand).filter(b=>b))].sort();
+const bf=document.getElementById('brandFilter');
+if(bf&&bf.options.length)bf.options[0].textContent=BRAND_FILTER_PLACEHOLDER;
+if(bf){const v=bf.value;bf.innerHTML='<option value="">-- Táº¥t cáº£ thÆ°Æ¡ng hiá»‡u --</option>';brands.forEach(b=>{bf.innerHTML+='<option value="'+esc(b)+'">'+esc(b)+'</option>'});bf.value=v}
+if(bf&&bf.options.length)bf.options[0].textContent=BRAND_FILTER_PLACEHOLDER;
+const bl=document.getElementById('brandList');
+if(bl){bl.innerHTML='';brands.forEach(b=>{bl.innerHTML+='<option value="'+esc(b)+'">'})}
+const bl2=document.getElementById('brandList2');
+if(bl2){bl2.innerHTML='';brands.forEach(b=>{bl2.innerHTML+='<option value="'+esc(b)+'">'})}}
+
+function updateStats(d){
+document.getElementById('statTotal').textContent=d.length;
+const p=d.filter(x=>x.sell_price>0).length;
+document.getElementById('statPriced').textContent=p;
+document.getElementById('statNoPriced').textContent=d.length-p}
+
+function applyFilter(){
+const q=(document.getElementById('searchInput').value||'').trim().toLowerCase();
+const cat=document.getElementById('catFilter').value;
+const brand=document.getElementById('brandFilter').value;
+let d=allProducts;
+if(cat)d=d.filter(p=>(p.category||'')===cat);
+if(brand)d=d.filter(p=>(p.brand||'')===brand);
+if(q)d=d.filter(p=>p.sku.toLowerCase().includes(q)||p.description.toLowerCase().includes(q)||(p.brand||'').toLowerCase().includes(q));
+renderTable(d)}
+
+let sTimer;document.getElementById('searchInput').oninput=()=>{clearTimeout(sTimer);sTimer=setTimeout(applyFilter,250)};
+
+function renderTable(d){
+const tb=document.getElementById('tableBody'),es=document.getElementById('emptyState');
+if(!d.length){tb.innerHTML='';es.style.display='block';return}es.style.display='none';
+tb.innerHTML=d.map(p=>`<tr>
+<td><input type="checkbox" class="rowCb" data-id="${p.id}" ${selected.has(p.id)?'checked':''} onchange="toggleSel(${p.id},this.checked)"></td>
+<td style="color:var(--muted)">#${p.id}</td>
+<td>${p.image_url?'<img class="thumb" src="'+esc(p.image_url)+'" onerror="this.outerHTML=\'<div class=no-img>📷</div>\'">' : '<div class="no-img">📷</div>'}</td>
+<td><span class="sku-badge">${esc(p.sku)}</span></td>
+<td>${esc(p.description)}</td>
+<td>${p.category?'<span class="cat-badge">'+esc(p.category)+'</span>':''}</td>
+<td>${p.brand?'<span class="brand-badge">'+esc(p.brand)+'</span>':''}</td>
+<td class="price list">${fmt(p.list_price)}</td>
+<td class="price input">${fmt(p.input_price)}</td>
+<td class="price sell">${fmt(p.sell_price)}</td>
+<td><div class="row-actions">
+<button class="btn btn-primary" onclick="editProduct(${p.id})">✏️</button>
+<button class="btn btn-red" onclick="deleteProduct(${p.id},'${esc(p.sku)}')">🗑️</button>
+</div></td></tr>`).join('');updateSelBar()}
+
+function toggleSel(id,c){if(c)selected.add(id);else selected.delete(id);updateSelBar()}
+function toggleAll(c){document.querySelectorAll('.rowCb').forEach(cb=>{cb.checked=c;const id=+cb.dataset.id;if(c)selected.add(id);else selected.delete(id)});updateSelBar()}
+function clearSelection(){selected.clear();document.querySelectorAll('.rowCb').forEach(cb=>cb.checked=false);document.getElementById('checkAll').checked=false;updateSelBar()}
+function updateSelBar(){const bar=document.getElementById('selBar');const n=selected.size;document.getElementById('selCount').textContent=n+' sản phẩm đã chọn';bar.classList.toggle('active',n>0)}
+
+function exportToQuote(){
+if(!selected.size){toast('Chưa chọn sản phẩm!','err');return}
+const items=allProducts.filter(p=>selected.has(p.id));
+localStorage.setItem('admin_export_products',JSON.stringify(items));
+toast('Đã xuất '+items.length+' SP! Đang mở Báo Giá...','ok');
+setTimeout(()=>window.open('/baogia','_blank'),800)}
+
+function deleteBulk(){
+if(!selected.size){toast('Chưa chọn SP!','err');return}
+if(!confirm('Bạn có chắc chắn muốn xóa '+selected.size+' sản phẩm đã chọn? Hành động này không thể hoàn tác!'))return;
+const ids=[...selected];
+const btn=document.getElementById('btnDeleteBulk');btn.disabled=true;btn.textContent='⏳...';
+Promise.all(ids.map(id=>fetch(API+'/products/'+id,{method:'DELETE'}).then(r=>r.json())))
+.then(()=>{removeProductsFromUI(ids);toast('Đã xóa '+ids.length+' SP!','ok');clearSelection()})
+.catch(()=>toast('Có lỗi khi xóa!','err'))
+.finally(()=>{btn.disabled=false;btn.textContent='🗑️ Xóa'})}
+
+function setCategoryBulk(){
+if(!selected.size){toast('Chưa chọn SP!','err');return}
+document.getElementById('bulkCat').value='';
+document.getElementById('bulkCatInfo').textContent='Sẽ gán cho '+selected.size+' sản phẩm đã chọn.';
+document.getElementById('catModal').classList.add('active')}
+function closeCatModal(){document.getElementById('catModal').classList.remove('active')}
+function applyBulkCategory(){
+const cat=document.getElementById('bulkCat').value.trim();
+if(!cat){toast('Nhập tên danh mục!','err');return}
+const ids=[...selected];
+const btn=document.getElementById('btnApplyCat');btn.disabled=true;btn.textContent='⏳...';
+Promise.all(ids.map(id=>fetch(API+'/products/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({category:cat})}).then(r=>r.json())))
+.then(()=>{toast('Đã gán "'+cat+'" cho '+ids.length+' SP!','ok');closeCatModal();clearSelection();loadProducts()})
+.catch(()=>toast('Có lỗi khi gán danh mục!','err'))
+.finally(()=>{btn.disabled=false;btn.textContent='✅ Áp dụng'})}
+
+function setBrandBulk(){
+if(!selected.size){toast('Chưa chọn SP!','err');return}
+document.getElementById('bulkBrand').value='';
+document.getElementById('bulkBrandInfo').textContent='Sẽ gán cho '+selected.size+' sản phẩm đã chọn.';
+document.getElementById('brandModal').classList.add('active')}
+function closeBrandModal(){document.getElementById('brandModal').classList.remove('active')}
+function applyBulkBrand(){
+const b=document.getElementById('bulkBrand').value.trim();
+if(!b){toast('Nhập tên thương hiệu!','err');return}
+const ids=[...selected];
+const btn=document.getElementById('btnApplyBrand');btn.disabled=true;btn.textContent='⏳...';
+Promise.all(ids.map(id=>fetch(API+'/products/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({brand:b})}).then(r=>r.json())))
+.then(()=>{toast('Đã gán "'+b+'" cho '+ids.length+' SP!','ok');closeBrandModal();clearSelection();loadProducts()})
+.catch(()=>toast('Có lỗi khi gán thương hiệu!','err'))
+.finally(()=>{btn.disabled=false;btn.textContent='✅ Áp dụng'})}
+
+function openCatCreateModal(){
+document.getElementById('catCreateModal').classList.add('active');renderCatList()}
+function closeCatCreateModal(){document.getElementById('catCreateModal').classList.remove('active')}
+function renderCatList(){
+const el=document.getElementById('catListDisplay');
+if(!categories.length){el.innerHTML='<p style="color:var(--muted);font-size:13px">Chưa có danh mục nào.</p>';return}
+el.innerHTML=categories.map(c=>'<span class="cat-badge" style="display:inline-block;margin:4px;padding:6px 12px;font-size:13px">'+esc(c)+'</span>').join('')}
+function createCategory(){
+const name=document.getElementById('newCatName').value.trim();
+if(!name){toast('Nhập tên danh mục!','err');return}
+if(categories.includes(name)){toast('Danh mục đã tồn tại!','err');return}
+categories.push(name);categories.sort();
+loadCategories2(categories);renderCatList();
+document.getElementById('newCatName').value='';
+toast('Đã tạo danh mục "'+name+'"! Hãy chọn SP rồi gán.','ok')}
+function loadCategories2(cats){
+['catFilter','catList','catList2'].forEach(id=>{
+const el=document.getElementById(id);
+if(id==='catFilter'){const v=el.value;el.innerHTML='<option value="">-- Tất cả danh mục --</option>';cats.forEach(c=>{el.innerHTML+='<option value="'+esc(c)+'">'+esc(c)+'</option>'});el.value=v}
+else{el.innerHTML='';cats.forEach(c=>{el.innerHTML+='<option value="'+esc(c)+'">'})}
+})}
+
+function openProductModal(p){
+document.getElementById('productModal').classList.add('active');
+if(p){document.getElementById('modalTitle').textContent='✏️ Sửa #'+p.id;document.getElementById('editId').value=p.id;document.getElementById('fSku').value=p.sku;document.getElementById('fDesc').value=p.description;document.getElementById('fDetails').value=p.details||'';document.getElementById('fCat').value=p.category||'';document.getElementById('fBrand').value=p.brand||'';document.getElementById('fImage').value=p.image_url||'';updateImgPreview(p.image_url);document.getElementById('fListPrice').value=p.list_price;document.getElementById('fInputPrice').value=p.input_price;document.getElementById('fSellPrice').value=p.sell_price}
+else{document.getElementById('modalTitle').textContent='➕ Thêm SP';document.getElementById('editId').value='';document.getElementById('fSku').value='';document.getElementById('fDesc').value='';document.getElementById('fDetails').value='';document.getElementById('fCat').value='';document.getElementById('fBrand').value='';document.getElementById('fImage').value='';updateImgPreview('');document.getElementById('fListPrice').value=0;document.getElementById('fInputPrice').value=0;document.getElementById('fSellPrice').value=0}}
+function closeProductModal(){document.getElementById('productModal').classList.remove('active')}
+function editProduct(id){const p=allProducts.find(x=>x.id===id);if(p)openProductModal(p)}
+
+function saveProduct(){
+const id=document.getElementById('editId').value;
+const body={sku:document.getElementById('fSku').value.trim(),description:document.getElementById('fDesc').value.trim(),details:document.getElementById('fDetails').value.trim(),category:document.getElementById('fCat').value.trim(),brand:document.getElementById('fBrand').value.trim(),image_url:document.getElementById('fImage').value.trim(),list_price:parseFloat(document.getElementById('fListPrice').value)||0,input_price:parseFloat(document.getElementById('fInputPrice').value)||0,sell_price:parseFloat(document.getElementById('fSellPrice').value)||0};
+if(!body.sku){toast('Nhập Mã SP!','err');return}
+fetch(id?API+'/products/'+id:API+'/products',{method:id?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+.then(r=>{if(!r.ok)return r.json().then(d=>{throw new Error(d.detail)});return r.json()})
+.then(()=>{toast(id?'Đã cập nhật!':'Đã thêm!','ok');closeProductModal();loadProducts()})
+.catch(e=>toast('Lỗi: '+e.message,'err'))}
+
+function deleteProduct(id,sku){if(!confirm('Xóa "'+sku+'"?'))return;fetch(API+'/products/'+id,{method:'DELETE'}).then(r=>{if(!r.ok)throw 0;return r.json()}).then(()=>{removeProductsFromUI([id]);toast('Đã xóa!','ok')}).catch(()=>toast('Lỗi!','err'))}
+
+function setUploadProgress(percent,label,activeStep,doneSteps){
+const wrap=document.getElementById('uploadProgress');
+const fill=document.getElementById('uploadProgressFill');
+const pct=document.getElementById('uploadProgressPercent');
+const text=document.getElementById('uploadProgressLabel');
+wrap.classList.add('active');
+fill.style.width=Math.max(0,Math.min(100,percent))+'%';
+pct.textContent=Math.round(percent)+'%';
+text.innerHTML=label;
+['stepPick','stepSend','stepAi','stepDone'].forEach(id=>{
+const el=document.getElementById(id);
+el.classList.remove('active','done');
+if(doneSteps.includes(id))el.classList.add('done');
+if(id===activeStep)el.classList.add('active');
+});
+}
+let uploadAiTimer=null,uploadAiStartedAt=0;
+let isUploadRunning=false;
+function stopUploadTimer(){
+if(uploadAiTimer){clearInterval(uploadAiTimer);uploadAiTimer=null}
+uploadAiStartedAt=0;
+}
+function startUploadTimer(){
+stopUploadTimer();
+uploadAiStartedAt=Date.now();
+uploadAiTimer=setInterval(()=>{
+const seconds=Math.max(0,Math.floor((Date.now()-uploadAiStartedAt)/1000));
+const text=seconds<60?seconds+' giây':(Math.floor(seconds/60)+' phút '+String(seconds%60).padStart(2,'0')+' giây');
+setUploadProgress(82,'<span class=\"upload-spinner\"></span> Server đã nhận file. AI đang phân tích... <strong>'+text+'</strong>','stepAi',['stepPick','stepSend']);
+const s=document.getElementById('uploadStatus');
+s.className='upload-status info';
+s.textContent='🤖 AI đang phân tích được '+text+'. Vui lòng chờ...';
+},1000);
+}
+function resetUploadProgress(){
+stopUploadTimer();
+isUploadRunning=false;
+document.getElementById('uploadProgress').classList.remove('active');
+document.getElementById('uploadProgressFill').style.width='0%';
+document.getElementById('uploadProgressPercent').textContent='0%';
+document.getElementById('uploadProgressLabel').textContent='Sẵn sàng upload';
+['stepPick','stepSend','stepAi','stepDone'].forEach(id=>document.getElementById(id).classList.remove('active','done'));
+}
+function openUploadModal(){document.getElementById('uploadModal').classList.add('active');document.getElementById('uploadFile').value='';const s=document.getElementById('uploadStatus');s.className='upload-status';s.textContent='';resetUploadProgress()}
+function closeUploadModal(){if(isUploadRunning)return;document.getElementById('uploadModal').classList.remove('active')}
+document.getElementById('uploadFile').onchange=function(){const f=this.files[0];if(f){const s=document.getElementById('uploadStatus');s.className='upload-status info';s.textContent='📎 '+f.name;setUploadProgress(5,'Đã chọn file: <strong>'+esc(f.name)+'</strong>','stepPick',['stepPick'])}}
+function doUpload(){
+const f=document.getElementById('uploadFile').files[0];if(!f){toast('Chọn file!','err');return}
+const b=document.getElementById('uploadBrand').value.trim();
+const fd=new FormData();fd.append('file',f);if(b)fd.append('brand',b);
+isUploadRunning=true;
+const btn=document.getElementById('btnUpload');btn.disabled=true;btn.textContent='⏳...';
+const s=document.getElementById('uploadStatus');s.className='upload-status info';s.textContent='Đang chuẩn bị upload...';
+setUploadProgress(8,'Đang chuẩn bị tải file lên server...','stepSend',['stepPick']);
+const xhr=new XMLHttpRequest();
+xhr.open('POST',API+'/upload',true);
+xhr.upload.onprogress=function(e){
+if(!e.lengthComputable)return;
+const uploadPercent=Math.round((e.loaded/e.total)*70);
+setUploadProgress(uploadPercent,'Đang tải file lên server...','stepSend',['stepPick']);
+s.className='upload-status info';s.textContent='📤 Đang upload '+Math.round((e.loaded/e.total)*100)+'%';
+};
+xhr.upload.onloadend=function(){
+setUploadProgress(78,'<span class=\"upload-spinner\"></span> Đã tải file xong. AI đang phân tích...','stepAi',['stepPick','stepSend']);
+s.className='upload-status info';s.textContent='🤖 AI đang phân tích. Vui lòng chờ...';
+if(!uploadAiTimer)startUploadTimer();
+};
+xhr.onloadstart=function(){
+s.className='upload-status info';s.textContent='📤 Bắt đầu upload...';
+};
+xhr.onreadystatechange=function(){
+if(xhr.readyState===2||xhr.readyState===3){
+setUploadProgress(82,'<span class=\"upload-spinner\"></span> Server đã nhận file. AI đang phân tích...','stepAi',['stepPick','stepSend']);
+s.className='upload-status info';s.textContent='🤖 AI đang phân tích. Vui lòng chờ...';
+if(!uploadAiTimer)startUploadTimer();
+}
+};
+xhr.onload=function(){
+stopUploadTimer();
+let data={};
+try{data=JSON.parse(xhr.responseText||'{}')}catch(_){}
+if(xhr.status>=200&&xhr.status<300&&data.status==='success'){
+setUploadProgress(100,'Hoàn tất. Dữ liệu đã được lưu vào catalog.','stepDone',['stepPick','stepSend','stepAi','stepDone']);
+s.className='upload-status ok';s.textContent='✅ '+data.message;loadProducts();
+setTimeout(()=>closeUploadModal(),1200);
+}else{
+setUploadProgress(100,'Quá trình phân tích dừng lại do lỗi.','stepAi',['stepPick','stepSend']);
+s.className='upload-status err';s.textContent='❌ '+(data.detail||'Lỗi');
+}
+isUploadRunning=false;
+btn.disabled=false;btn.textContent='🚀 Phân tích';
+};
+xhr.onerror=function(){
+stopUploadTimer();
+setUploadProgress(100,'Không thể kết nối tới backend upload.','stepSend',['stepPick']);
+s.className='upload-status err';s.textContent='❌ Lỗi kết nối!';
+isUploadRunning=false;
+btn.disabled=false;btn.textContent='🚀 Phân tích';
+};
+xhr.send(fd)}
+
+
+// openCatManager removed - replaced by openCatCreateModal
+function updateImgPreview(url){const img=document.getElementById('fImagePreview');if(url){img.src=url;img.style.display='block';img.onerror=()=>{img.style.display='none'}}else{img.style.display='none';img.src=''}}
+document.getElementById('fImage').oninput=function(){updateImgPreview(this.value.trim())};
+function toast(m,t){const e=document.getElementById('toast');e.textContent=m;e.className='toast '+t+' show';setTimeout(()=>e.classList.remove('show'),3000)}
+document.querySelectorAll('.modal-overlay').forEach(m=>m.onclick=e=>{if(e.target!==m)return;if(m.id==='uploadModal'&&isUploadRunning)return;m.classList.remove('active')});
+</script>
+</body></html>

@@ -1,0 +1,1733 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo Giá Thiết Bị Điện - Smarthome Đà Nẵng</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0f172a;
+            --secondary-color: #3b82f6;
+            --text-color: #334155;
+            --bg-color: #f8fafc;
+            --border-color: #e2e8f0;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1050px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 40px 50px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        .btn-print, .btn-save, .btn-clear, .btn-export, .btn-import, .btn-db {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-print { background-color: var(--secondary-color); box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3); }
+        .btn-print:hover { background-color: #2563eb; transform: translateY(-1px); }
+        .btn-save { background-color: #10b981; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3); }
+        .btn-save:hover { background-color: #059669; transform: translateY(-1px); }
+        .btn-clear { background-color: #f59e0b; box-shadow: 0 4px 6px rgba(245, 158, 11, 0.3); }
+        .btn-clear:hover { background-color: #d97706; transform: translateY(-1px); }
+        .btn-export { background-color: #6366f1; box-shadow: 0 4px 6px rgba(99, 102, 241, 0.3); }
+        .btn-export:hover { background-color: #4f46e5; transform: translateY(-1px); }
+        .btn-import { background-color: #8b5cf6; box-shadow: 0 4px 6px rgba(139, 92, 246, 0.3); }
+        .btn-import:hover { background-color: #7c3aed; transform: translateY(-1px); }
+        .btn-db { background-color: #f43f5e; box-shadow: 0 4px 6px rgba(244, 63, 94, 0.3); }
+        .btn-db:hover { background-color: #e11d48; transform: translateY(-1px); }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .company-info h1 {
+            margin: 0 0 5px 0;
+            color: var(--primary-color);
+            font-size: 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .company-info p {
+            margin: 0 0 3px 0;
+            color: #64748b;
+            font-size: 14px;
+        }
+        .quote-info {
+            text-align: right;
+        }
+        .quote-info h2 {
+            margin: 0 0 5px 0;
+            color: var(--secondary-color);
+            font-size: 24px;
+            text-transform: uppercase;
+        }
+        .quote-info p {
+            margin: 0;
+            font-size: 14px;
+            color: #64748b;
+        }
+        .client-section {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            background-color: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px dashed var(--border-color);
+        }
+        .client-info h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: var(--secondary-color);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .client-info p {
+            margin: 5px 0;
+            font-size: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            table-layout: fixed;
+        }
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: left;
+            padding: 12px 15px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        th:first-child {
+            border-top-left-radius: 6px;
+        }
+        th:last-child {
+            border-top-right-radius: 6px;
+        }
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+            vertical-align: top;
+        }
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        tr:hover {
+            background-color: #f1f5f9;
+        }
+        .category-row {
+            background-color: #e2e8f0 !important;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            font-size: 13px;
+        }
+        input[type="number"], select.unit {
+            width: 100%;
+            max-width: 90px;
+            padding: 8px 6px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            text-align: right;
+            box-sizing: border-box;
+            background-color: white;
+        }
+        select.unit {
+            text-align: left;
+            text-align-last: left;
+            cursor: pointer;
+        }
+        input[type="number"]:focus,
+        select.unit:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+        .editable-cell {
+            padding: 4px 6px;
+            border: 1px dashed transparent;
+            border-radius: 4px;
+            transition: all 0.2s;
+            outline: none;
+            min-height: 20px;
+            word-wrap: break-word;
+        }
+        span.editable-cell {
+            display: inline-block;
+            min-width: 150px;
+            vertical-align: top;
+        }
+        .editable-cell:hover {
+            border-color: #cbd5e1;
+            background-color: rgba(255,255,255,0.6);
+        }
+        .editable-cell:focus {
+            border-color: var(--secondary-color);
+            background-color: #fff;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .total-section {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .total-box {
+            background-color: #f1f5f9;
+            padding: 20px 30px;
+            border-radius: 8px;
+            width: 350px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 15px;
+            color: var(--text-color);
+        }
+        .total-row.grand-total {
+            font-weight: 800;
+            font-size: 18px;
+            color: var(--secondary-color);
+            border-top: 2px dashed #cbd5e1;
+            padding-top: 15px;
+            margin-top: 5px;
+        }
+        .currency {
+            font-weight: 600;
+        }
+        .picker-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            table-layout: auto !important;
+            margin-bottom: 0 !important;
+        }
+        .picker-table th,
+        .picker-table td {
+            padding: 10px !important;
+            vertical-align: top !important;
+            border-bottom: 1px solid #e2e8f0 !important;
+            word-break: break-word !important;
+            font-size: 13px !important;
+        }
+        .picker-table th {
+            background: #f8fafc !important;
+            position: sticky !important;
+            top: 0 !important;
+            box-shadow: 0 1px 0 #e2e8f0 !important;
+            text-align: left !important;
+            color: #0f172a !important;
+            font-weight: 600 !important;
+            font-size: 13px !important;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 13px;
+            color: #94a3b8;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                padding: 0;
+                max-width: 100%;
+            }
+            .actions {
+                display: none;
+            }
+            input[type="number"] {
+                border: none;
+                background: transparent;
+                padding: 0;
+                width: 100%;
+                text-align: right;
+                appearance: none;
+                -moz-appearance: textfield;
+            }
+            input[type="number"]::-webkit-outer-spin-button,
+            input[type="number"]::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+            .editable-cell {
+                border: none !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                padding: 0;
+            }
+        }
+        .limited-text {
+            color: #ef4444;
+            font-size: 12px;
+            display: block;
+            margin-top: 4px;
+            font-style: italic;
+        }
+        .amount {
+            color: var(--secondary-color);
+            font-weight: 600;
+            font-size: 15px;
+            vertical-align: middle;
+        }
+        .btn-delete {
+            background-color: transparent;
+            color: #ef4444;
+            border: none;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            opacity: 0.4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+        .btn-delete:hover {
+            opacity: 1;
+            background-color: #fee2e2;
+            transform: scale(1.05);
+        }
+        .deleted-row {
+            display: none !important;
+        }
+        @media print {
+            .action-col { display: none !important; }
+        }
+        .btn-add {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #3b82f6;
+            background-color: #eff6ff;
+            border: 1px dashed #3b82f6;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-add:hover {
+            background-color: #dbeafe;
+        }
+        @media print {
+            .add-actions { display: none !important; }
+            .print-hide { display: none !important; }
+        }
+        .category-header-wrap {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .btn-cat-action {
+            background: transparent;
+            padding: 4px 8px;
+            font-size: 11px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-transform: none;
+            opacity: 0.7;
+            margin-left: 6px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid currentColor;
+            transition: all 0.2s;
+        }
+        .btn-cat-action:hover {
+            opacity: 1;
+        }
+        .btn-cat-add { color: #3b82f6; border-color: #3b82f6; }
+        .btn-cat-add:hover { background: #eff6ff; }
+        .btn-cat-del { color: #ef4444; border-color: #ef4444; }
+        .btn-cat-del:hover { background: #fee2e2; }
+        .btn-cat-db { color: #10b981; border-color: #10b981; }
+        .btn-cat-db:hover { background: #d1fae5; }
+        
+        /* Autocomplete Dropdown Styles */
+        .autocomplete-dropdown {
+            position: absolute;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 1000;
+            width: max-content;
+            min-width: 300px;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+        }
+        .autocomplete-item {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+        .autocomplete-item:hover {
+            background-color: #f8fafc;
+        }
+        .autocomplete-sku {
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+        .autocomplete-price {
+            float: right;
+            font-weight: 600;
+            color: #10b981;
+        }
+        .autocomplete-desc {
+            color: #64748b;
+            margin-top: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 400px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Catalog Modal -->
+    <div id="catalogModal" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 30px; border-radius: 12px; width: 500px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+            <h2 style="margin-top: 0; color: #0f172a;">Quản lý CSDL Catalog AI</h2>
+            <p style="color: #64748b; font-size: 14px;">Upload Báo Giá (Excel/PDF) gốc từ nhà cung cấp. AI của Google Gemini sẽ tự động đọc hiểu cấu trúc và nạp vào Thư viện Gợi ý độc quyển.</p>
+            
+            <input type="file" id="catalogFile" accept=".pdf,.xlsx,.csv" style="margin: 20px 0; display: block; border: 1px solid #e2e8f0; padding: 10px; width: 100%; border-radius: 6px; box-sizing: border-box;">
+            
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button onclick="closeCatalogModal()" style="padding: 8px 16px; border: 1px solid #cbd5e1; background: white; border-radius: 6px; cursor: pointer; font-weight: bold;">Đóng</button>
+                <button onclick="uploadCatalogFile()" id="btnUploadCatalog" style="padding: 8px 16px; border: none; background: #3b82f6; color: white; border-radius: 6px; cursor: pointer; font-weight: bold;">Tải lên Database</button>
+            </div>
+            <div id="uploadStatus" style="margin-top: 15px; font-size: 13px; font-weight: bold;"></div>
+        </div>
+    </div>
+
+    <!-- Product Picker Modal -->
+    <div id="productPickerModal" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 20px; border-radius: 12px; width: 980px; max-width: 94vw; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0; color: #0f172a;">🔍 Chọn thiết bị từ Database</h2>
+                <button onclick="closeProductPicker()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #64748b;">&times;</button>
+            </div>
+            <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                <input type="text" id="pickerSearch" placeholder="Tìm theo mã hoặc tên..." style="flex: 1; padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; outline: none;" oninput="filterPicker()">
+                <select id="pickerCat" style="padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; outline: none;" onchange="filterPicker()">
+                    <option value="">-- Tất cả danh mục --</option>
+                </select>
+                <select id="pickerBrand" style="padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; outline: none;" onchange="filterPicker()">
+                    <option value="">-- Tất cả thương hiệu --</option>
+                </select>
+            </div>
+            <div style="flex: 1; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 6px;">
+                <table class="picker-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 18%;">Mã SP</th>
+                            <th style="width: 38%;">Mô tả</th>
+                            <th style="width: 20%;">Danh mục</th>
+                            <th style="width: 14%; text-align: right;">Giá bán</th>
+                            <th style="width: 10%; text-align: center;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pickerBody">
+                        <tr><td colspan="5" style="padding: 20px; text-align: center; color: #64748b;">Đang tải dữ liệu...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="quoteManagerModal" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 20px; border-radius: 12px; width: 980px; max-width: 94vw; max-height: 90vh; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0; color: #0f172a;">📂 Quản lý Báo Giá đã lưu</h2>
+                <button onclick="closeQuoteManager()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #64748b;">&times;</button>
+            </div>
+            <div style="flex: 1; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 6px;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                    <thead style="background: #f8fafc; position: sticky; top: 0; box-shadow: 0 1px 0 #e2e8f0;">
+                        <tr>
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #e2e8f0;">ID</th>
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #e2e8f0;">Tên Khách Hàng</th>
+                            <th style="padding: 10px; text-align: left; border-bottom: 1px solid #e2e8f0;">Ngày giờ lưu</th>
+                            <th style="padding: 10px; text-align: center; width: 150px; border-bottom: 1px solid #e2e8f0;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="quoteManagerBody">
+                        <tr><td colspan="4" style="padding: 20px; text-align: center; color: #64748b;">Đang tải dữ liệu...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        
+        <div class="actions">
+            <button class="btn-export btn-db" onclick="openCatalogModal()">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2 1.5 3 3 3h10c1.5 0 3-1 3-3V7c0-2-1.5-3-3-3H7C5.5 4 4 5 4 7zm0 0c0-1.5 3-3 8-3s8 1.5 8 3m-16 5c0 1.5 3 3 8 3s8-1.5 8-3m-16 5c0 1.5 3 3 8 3s8-1.5 8-3"></path></svg>
+                Quản lý Catalog AI
+            </button>
+            <button class="btn-save" id="btnSaveQuote" onclick="saveQuoteToDB()" style="background:#8b5cf6">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+                Lưu vào DB
+            </button>
+            <button class="btn-export btn-db" onclick="openQuoteManager()">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                Quản lý Báo Giá
+            </button>
+            <button class="btn-export" onclick="exportQuoteExcel()">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"></path></svg>
+                Xuất Excel
+            </button>
+            <button class="btn-print" onclick="exportQuotePdf()">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                In PDF
+            </button>
+        </div>
+        <div id="currentQuoteStatus" class="print-hide" style="display:none; margin: -8px 0 16px; padding: 8px 12px; border-radius: 8px; background: #eff6ff; color: #1d4ed8; font-size: 13px; font-weight: 600;"></div>
+
+        <div class="header">
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <img src="Asset-14logo-khoa-duy-blackok-1024x461.png" alt="Logo Công ty Khoa Duy" style="height: 65px; object-fit: contain;">
+                <div class="company-info">
+                    <h1>CÔNG TY TNHH CÔNG NGHỆ VÀ DỊCH VỤ KHOA DUY</h1>
+                    <p>Địa chỉ: 232 Phạm Xuân Ẩn, Phường Hoà Xuân, TP Đà Nẵng</p>
+                    <p>Điện thoại: 0917.796.022 | Website: www.smarthomedanang.vn</p>
+                </div>
+            </div>
+            <div class="quote-info">
+                <h2>BÁO GIÁ</h2>
+                <p>Mã BG: <span class="editable-cell" contenteditable="true">BG-20260420-JH</span></p>
+                <p>Ngày: <span class="editable-cell" contenteditable="true">20/04/2026</span></p>
+            </div>
+        </div>
+
+        <div class="client-section">
+            <div class="client-info">
+                <h3>THÔNG TIN KHÁCH HÀNG</h3>
+                <p><strong>Khách hàng:</strong> <span class="editable-cell" contenteditable="true" spellcheck="false">MRS. NGUYỄN THỊ KIỀU</span></p>
+                <p><strong>Dự án:</strong> <span class="editable-cell" contenteditable="true" spellcheck="false">Biệt thự JAY HOME</span></p>
+            </div>
+            <div class="client-info" style="text-align: right;">
+                <h3>HẠNG MỤC BÁO GIÁ</h3>
+                <p>Hệ thống công tắc điều khiển</p>
+                <p>Hệ thống đèn chiếu sáng, sưởi & Smart Home</p>
+            </div>
+        </div>
+
+        <table id="quote-table">
+            <thead>
+                <tr>
+                    <th width="4%" class="text-center">STT</th>
+                    <th width="11%">Mã SP</th>
+                    <th width="27%">Loại thiết bị / Diễn giải</th>
+                    <th width="12%">Thương hiệu</th>
+                    <th width="6%" class="text-center">ĐVT</th>
+                    <th width="12%" class="text-center">Số lượng</th>
+                    <th width="15%" class="text-right">Đơn giá (VNĐ)</th>
+                    <th width="13%" class="text-right">Thành tiền (VNĐ)</th>
+                    <th width="5%" class="text-center print-hide">Xóa</th>
+                </tr>
+            </thead>
+            <tbody id="quote-body">
+            </tbody>
+        </table>
+
+        <div class="add-actions" style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <button class="btn-add" onclick="addRow()">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                Thêm thiết bị mới
+            </button>
+            <button class="btn-add" onclick="openProductPicker()">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16M4 11h16M9 15h6"></path></svg>
+                Thêm từ DB
+            </button>
+            <button class="btn-add" onclick="addCategory()">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Thêm danh mục mới
+            </button>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 30px;">
+            <div class="editable-cell" contenteditable="true" spellcheck="false" style="font-size: 13px; color: #64748b; line-height: 1.6; flex: 1; border: 1px dashed transparent; min-height: 50px;">
+                <strong>Ghi chú:</strong><br>
+                - Báo giá có giá trị trong 1 tuần.
+            </div>
+            <div class="total-section" style="margin-top: 0">
+                <div class="total-box">
+                    <div class="total-row" style="align-items: center;">
+                        <span>Cộng tiền hàng:</span>
+                        <span class="currency" id="subtotal">0</span>
+                    </div>
+                    <div class="total-row" style="align-items: center;">
+                        <span>Phí lắp đặt (<span class="editable-cell" id="installPercent" contenteditable="true" spellcheck="false" style="min-width: 25px; text-align: center; border: 1px dashed #cbd5e1; border-radius: 4px; padding: 0 4px; margin: 0 2px;">10</span>%):</span>
+                        <span class="currency" id="installationFee">0</span>
+                    </div>
+                    <div class="total-row" style="align-items: center;">
+                        <span>Chi phí vận chuyển:</span>
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <input type="number" id="transportFee" min="0" value="0" style="width: 105px; max-width: 100%; text-align: right; padding: 6px; border: 1px solid var(--border-color); border-radius: 4px; font-family: inherit; font-size: 14px; transition: 0.2s; outline: none;">
+                        </div>
+                    </div>
+                    <div class="total-row grand-total">
+                        <span>TỔNG CỘNG:</span>
+                        <span class="currency" id="grandtotal">0 VNĐ</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            Hệ thống Báo Giá Trực Quan phiên bản tự lưu. Dữ liệu sẽ được bảo vệ ngay trên trình duyệt của bạn.
+        </div>
+    </div>
+
+    <script>
+        function openCatalogModal() {
+            document.getElementById('catalogModal').style.display = 'flex';
+            document.getElementById('uploadStatus').textContent = '';
+            document.getElementById('catalogFile').value = '';
+        }
+        function closeCatalogModal() {
+            document.getElementById('catalogModal').style.display = 'none';
+        }
+        function uploadCatalogFile() {
+            const fileInput = document.getElementById('catalogFile');
+            if(fileInput.files.length === 0) return alert("Vui lòng chọn file Excel hoặc PDF từ Nhà cung cấp!");
+            
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            const btn = document.getElementById('btnUploadCatalog');
+            btn.textContent = 'Đang phân tích AI...';
+            btn.disabled = true;
+            document.getElementById('uploadStatus').textContent = '🤖 Đang kết nối Gemini AI. Trí tuệ nhân tạo đang đọc file... Có thể mất 15-30 giây tùy độ dài.';
+            document.getElementById('uploadStatus').style.color = '#3b82f6';
+            
+            fetch("http://localhost:8000/api/upload", {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    document.getElementById('uploadStatus').textContent = '✅ ' + data.message;
+                    document.getElementById('uploadStatus').style.color = '#10b981';
+                } else {
+                    document.getElementById('uploadStatus').textContent = '❌ Lỗi: ' + (data.detail || 'Không xác định');
+                    document.getElementById('uploadStatus').style.color = '#ef4444';
+                }
+            })
+            .catch(err => {
+                document.getElementById('uploadStatus').textContent = '❌ Lỗi kết nối. Backend Python (FastAPI) chưa được khởi động trên cổng 8000.';
+                document.getElementById('uploadStatus').style.color = '#ef4444';
+            })
+            .finally(() => {
+                btn.textContent = 'Tải lên Database';
+                btn.disabled = false;
+            });
+        }
+
+        function formatMoney(amount) {
+            return new Intl.NumberFormat('vi-VN').format(Math.round(amount));
+        }
+
+        function updateSTT() {
+            let stt = 1;
+            const trs = document.querySelectorAll('#quote-body tr:not(.category-row)');
+            trs.forEach(tr => {
+                if(!tr.classList.contains('deleted-row')) {
+                    const sttTd = tr.querySelector('td:first-child');
+                    if(sttTd) sttTd.textContent = stt;
+                    stt++;
+                }
+            });
+        }
+
+        function calculate() {
+            let trs = document.querySelectorAll('#quote-body tr:not(.category-row)');
+            let subtotal = 0;
+
+            trs.forEach(tr => {
+                if(tr.classList.contains('deleted-row')) return;
+
+                let qtyInput = tr.querySelector('.qty');
+                let priceInput = tr.querySelector('.price');
+                let amountTd = tr.querySelector('.amount');
+
+                let qty = qtyInput.value ? parseFloat(qtyInput.value) : 0;
+                let price = priceInput.value ? parseFloat(priceInput.value) : 0;
+                
+                let amount = qty * price;
+
+                if(amount > 0) {
+                    amountTd.textContent = formatMoney(amount);
+                } else {
+                    amountTd.textContent = '0';
+                }
+                
+                subtotal += amount;
+            });
+
+            // Lấy % lắp đặt
+            let percentText = document.getElementById('installPercent').textContent.trim();
+            // Xử lý cả dấu phẩy nếu người dùng nhập kiểu việt (vd 5,5)
+            let percent = parseFloat(percentText.replace(/,/g, '.'));
+            if(isNaN(percent)) percent = 0;
+            
+            let installationFee = subtotal * (percent / 100);
+            
+            // Lấy Phí vận chuyển
+            let transportInput = document.getElementById('transportFee');
+            let transportFee = 0;
+            if(transportInput && transportInput.value) {
+                transportFee = parseFloat(transportInput.value);
+                if(isNaN(transportFee)) transportFee = 0;
+            }
+
+            let grandtotal = subtotal + installationFee + transportFee;
+
+            document.getElementById('subtotal').textContent = formatMoney(subtotal);
+            document.getElementById('installationFee').textContent = formatMoney(installationFee);
+            document.getElementById('grandtotal').textContent = formatMoney(grandtotal) + ' VNĐ';
+
+            updateSTT();
+        }
+        function serializeQuoteData() {
+            document.querySelectorAll('#quote-body input[type="number"]').forEach(el => {
+                el.setAttribute('value', el.value);
+            });
+
+            return {
+                html: document.getElementById('quote-body').innerHTML,
+                outsideData: Array.from(document.querySelectorAll('.editable-cell:not(#quote-body .editable-cell)')).map(el => el.innerHTML),
+                outsideInputs: Array.from(document.querySelectorAll('.total-box input')).map(el => el.value)
+            };
+        }
+
+        function applyQuoteData(data) {
+            if (!data || !data.html) {
+                throw new Error('Quote data is invalid.');
+            }
+
+            document.getElementById('quote-body').innerHTML = data.html;
+
+            if (Array.isArray(data.outsideData)) {
+                const outsideEditables = document.querySelectorAll('.editable-cell:not(#quote-body .editable-cell)');
+                outsideEditables.forEach((el, index) => {
+                    if (data.outsideData[index] !== undefined) el.innerHTML = data.outsideData[index];
+                });
+            }
+
+            if (Array.isArray(data.outsideInputs)) {
+                const outsideIns = document.querySelectorAll('.total-box input');
+                outsideIns.forEach((el, index) => {
+                    if (data.outsideInputs[index] !== undefined) el.value = data.outsideInputs[index];
+                });
+            }
+        }
+
+        function createUnitSelectElement(selectedUnit = 'Cai') {
+            const units = [
+                {value: 'Cai', label: 'Cái'},
+                {value: 'Bo', label: 'Bộ'},
+                {value: 'M', label: 'M'}
+            ];
+            const select = document.createElement('select');
+            select.className = 'unit';
+            units.forEach(unit => {
+                const option = document.createElement('option');
+                option.value = unit.value;
+                option.textContent = unit.label;
+                if (unit.value === selectedUnit) option.selected = true;
+                select.appendChild(option);
+            });
+            return select;
+        }
+
+        function createQuoteRowElement(product = {}) {
+            const sku = product.sku || '-';
+            const description = product.description || 'Thiết bị mới';
+            const brand = product.brand || '-';
+            const validUnits = ['Cai', 'Bo', 'M'];
+            const unit = validUnits.includes(product.unit) ? product.unit : 'Cai';
+            const qty = product.qty ?? 1;
+            const price = product.price ?? product.sell_price ?? 0;
+
+            const tr = document.createElement('tr');
+
+            const tdStt = document.createElement('td');
+            tdStt.className = 'text-center';
+            tdStt.textContent = '';
+            tr.appendChild(tdStt);
+
+            const tdSku = document.createElement('td');
+            const skuDiv = document.createElement('div');
+            skuDiv.className = 'editable-cell';
+            skuDiv.contentEditable = 'true';
+            skuDiv.spellcheck = false;
+            skuDiv.textContent = sku;
+            tdSku.appendChild(skuDiv);
+            tr.appendChild(tdSku);
+
+            const tdDesc = document.createElement('td');
+            const descDiv = document.createElement('div');
+            descDiv.className = 'editable-cell';
+            descDiv.contentEditable = 'true';
+            descDiv.spellcheck = false;
+            descDiv.textContent = description;
+            tdDesc.appendChild(descDiv);
+            tr.appendChild(tdDesc);
+
+            const tdBrand = document.createElement('td');
+            const brandDiv = document.createElement('div');
+            brandDiv.className = 'editable-cell';
+            brandDiv.contentEditable = 'true';
+            brandDiv.spellcheck = false;
+            brandDiv.textContent = brand;
+            tdBrand.appendChild(brandDiv);
+            tr.appendChild(tdBrand);
+
+            const tdUnit = document.createElement('td');
+            tdUnit.className = 'text-center';
+            tdUnit.appendChild(createUnitSelectElement(unit));
+            tr.appendChild(tdUnit);
+
+            const tdQty = document.createElement('td');
+            tdQty.className = 'text-center';
+            const qtyInput = document.createElement('input');
+            qtyInput.type = 'number';
+            qtyInput.min = '0';
+            qtyInput.className = 'qty';
+            qtyInput.value = qty;
+            tdQty.appendChild(qtyInput);
+            tr.appendChild(tdQty);
+
+            const tdPrice = document.createElement('td');
+            tdPrice.className = 'text-right';
+            const priceInput = document.createElement('input');
+            priceInput.type = 'number';
+            priceInput.min = '0';
+            priceInput.className = 'price';
+            priceInput.value = price;
+            tdPrice.appendChild(priceInput);
+            tr.appendChild(tdPrice);
+
+            const tdAmount = document.createElement('td');
+            tdAmount.className = 'text-right amount';
+            tdAmount.textContent = '0';
+            tr.appendChild(tdAmount);
+
+            const tdAction = document.createElement('td');
+            tdAction.className = 'text-center action-col';
+            tdAction.innerHTML = `<button class="btn-delete" onclick="deleteRow(this)" title="Xóa" tabindex="-1">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>`;
+            tr.appendChild(tdAction);
+
+            return tr;
+        }
+        function deleteRow(btn) {
+            if(confirm("Bạn có chắc chắn muốn xóa thiết bị này khỏi danh sách báo giá?")) {
+                const tr = btn.closest('tr');
+                tr.remove();
+                calculate();
+            }
+        }
+
+        function addRow() {
+            const tbody = document.getElementById('quote-body');
+            const tr = createQuoteRowElement();
+            tbody.appendChild(tr);
+            calculate();}
+
+        function addCategory() {
+            const tbody = document.getElementById('quote-body');
+            const tr = document.createElement('tr');
+            tr.className = 'category-row';
+            tr.innerHTML = `
+                <td colspan="9">
+                    <div class="category-header-wrap">
+                        <div class="editable-cell" contenteditable="true" spellcheck="false">DANH MỤC MỚI (CLICK ĐỂ SỬA)</div>
+                        <div class="print-hide" style="display: flex;">
+                            <button class="btn-cat-action btn-cat-add" onclick="addRowToCategory(this)" tabindex="-1">+ Thêm TB</button>
+                            <button class="btn-cat-action btn-cat-db" onclick="openProductPicker(this)" tabindex="-1">🔍 Từ DB</button>
+                            <button class="btn-cat-action btn-cat-del" onclick="deleteCategory(this)" tabindex="-1">Xóa DM</button>
+                        </div>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(tr);
+            calculate();}
+
+        function addRowToCategory(btn) {
+            const currentCatRow = btn.closest('tr.category-row');
+            let nextRow = currentCatRow.nextElementSibling;
+            while(nextRow && !nextRow.classList.contains('category-row')) {
+                nextRow = nextRow.nextElementSibling;
+            }
+            
+            const tbody = document.getElementById('quote-body');
+            const tr = createQuoteRowElement();
+            
+            if(nextRow) {
+                tbody.insertBefore(tr, nextRow);
+            } else {
+                tbody.appendChild(tr);
+            }
+            
+            calculate();}
+
+        function deleteCategory(btn) {
+            if(confirm("CẢNH BÁO: Rất nguy hiểm! Bạn có chắc chắn muốn xóa TOÀN BỘ Danh Mục này (gồm cả các thiết bị bên trong)?")) {
+                const currentCatRow = btn.closest('tr.category-row');
+                let nextRow = currentCatRow.nextElementSibling;
+                const rowsToDelete = [currentCatRow];
+                
+                while(nextRow && !nextRow.classList.contains('category-row')) {
+                    rowsToDelete.push(nextRow);
+                    nextRow = nextRow.nextElementSibling;
+                }
+                
+                rowsToDelete.forEach(row => row.classList.add('deleted-row'));
+                calculate();}
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const theadTr = document.querySelector('#quote-table thead tr');
+            if (theadTr) {
+                theadTr.dataset.brandReady = '1';
+                theadTr.innerHTML = `
+                    <th width="4%" class="text-center">STT</th>
+                    <th width="11%">Mã SP</th>
+                    <th width="28%">Loại thiết bị / Diễn giải</th>
+                    <th width="11%">Thương hiệu</th>
+                    <th width="6%" class="text-center">ĐVT</th>
+                    <th width="10%" class="text-center">Số lượng</th>
+                    <th width="14%" class="text-right">Đơn giá (VNĐ)</th>
+                    <th width="15%" class="text-right">Thành tiền (VNĐ)</th>
+                    <th width="5%" class="text-center print-hide action-col">Xóa</th>`;
+            }
+
+            const trs = document.querySelectorAll('#quote-body tr');
+            trs.forEach(tr => {
+                // Tiêm cột action-col
+                if(!tr.querySelector('.action-col')) {
+                    const td = document.createElement('td');
+                    td.className = 'text-center action-col';
+                    if(tr.classList.contains('category-row')) {
+                        const cTd = tr.querySelector('td');
+                        if(cTd) cTd.colSpan = 9;
+                    } else {
+                        td.innerHTML = `<button class="btn-delete" onclick="deleteRow(this)" title="Xóa thiết bị này" tabindex="-1">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>`;
+                        tr.appendChild(td);
+                    }
+                }
+
+                // Tiêm giao diện Thêm/Xóa danh mục
+                if(tr.classList.contains('category-row')) {
+                    const td = tr.querySelector('td');
+                    if(!td.querySelector('.category-header-wrap')) {
+                        const cellContent = td.innerHTML;
+                        td.innerHTML = `
+                            <div class="category-header-wrap">
+                                ${cellContent}
+                                <div class="print-hide" style="display: flex;">
+                                    <button class="btn-cat-action btn-cat-add" onclick="addRowToCategory(this)" tabindex="-1">+ Thêm TB</button>
+                                    <button class="btn-cat-action btn-cat-db" onclick="openProductPicker(this)" tabindex="-1">🔍 Từ DB</button>
+                                    <button class="btn-cat-action btn-cat-del" onclick="deleteCategory(this)" tabindex="-1">Xóa DM</button>
+                                </div>
+                            </div>
+                        `;
+                    } else if (!td.querySelector('.btn-cat-db')) {
+                        const btnGroup = td.querySelector('.print-hide');
+                        if (btnGroup) {
+                            const btnAdd = btnGroup.querySelector('.btn-cat-add');
+                            if (btnAdd) {
+                                btnAdd.insertAdjacentHTML('afterend', '<button class="btn-cat-action btn-cat-db" onclick="openProductPicker(this)" tabindex="-1">🔍 Từ DB</button>');
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Gắn event tự động tính tổng tiền thông qua cơ chế Event Delegation 
+            // Giúp tính toán cho cả các dòng mới Add mà không cần khai báo lại addEventListener
+            const tbody = document.getElementById('quote-body');
+            tbody.addEventListener('input', function(e) {
+                if(e.target && e.target.type === 'number') calculate();
+            });
+            tbody.addEventListener('change', function(e) {
+                if(e.target && e.target.type === 'number') calculate();
+            });
+            
+            // Lắng nghe thay đổi ở khu vực tổng kết (% phí lắp đặt, phí vận chuyển)
+            const totalBox = document.querySelector('.total-box');
+            if(totalBox) {
+                totalBox.addEventListener('input', calculate);
+            }
+            
+            // -- LOGIC AUTOCOMPLETE / GỢI Ý QUA API --
+            const API_BASE = "http://localhost:8000/api";
+            let searchTimeout = null;
+            let activeDropdown = null;
+
+            function closeDropdown() {
+                if(activeDropdown) {
+                    activeDropdown.remove();
+                    activeDropdown = null;
+                }
+            }
+
+            document.body.addEventListener('click', closeDropdown);
+
+            tbody.addEventListener('keyup', function(e) {
+                if(e.target && e.target.classList.contains('editable-cell') && !e.target.closest('.category-row')) {
+                    const tr = e.target.closest('tr');
+                    const tds = tr.querySelectorAll('td');
+                    // Check if focused on SKU (td 1) or Desc (td 2)
+                    if(tds.length >= 7) {
+                        const isSku = e.target === tds[1].querySelector('.editable-cell');
+                        const isDesc = e.target === tds[2].querySelector('.editable-cell');
+                        const isBrand = e.target === tds[3].querySelector('.editable-cell');
+                        
+                        if(isSku || isDesc || isBrand) {
+                            clearTimeout(searchTimeout);
+                            const q = e.target.textContent.trim();
+                            if(q.length < 2) {
+                                closeDropdown();
+                                return;
+                            }
+                            
+                            searchTimeout = setTimeout(() => {
+                                fetch(`${API_BASE}/search?q=${encodeURIComponent(q)}`)
+                                .then(res => res.json())
+                                .then(data => {
+                                    closeDropdown();
+                                    if(!data || data.length === 0) return;
+                                    
+                                    const rect = e.target.getBoundingClientRect();
+                                    const dropdown = document.createElement('div');
+                                    dropdown.className = 'autocomplete-dropdown';
+                                    dropdown.style.top = (rect.bottom + window.scrollY + 2) + 'px';
+                                    dropdown.style.left = (rect.left + window.scrollX) + 'px';
+                                    
+                                    data.forEach(item => {
+                                        const div = document.createElement('div');
+                                        div.className = 'autocomplete-item';
+                                        div.innerHTML = `
+                                            <div><span class="autocomplete-sku">${item.sku}</span> <span class="autocomplete-price">${formatMoney(item.sell_price)}đ</span></div>
+                                            <div class="autocomplete-desc">${item.description}</div>
+                                        `;
+                                        div.onclick = (evt) => {
+                                            evt.stopPropagation();
+                                            // Điền tự động vào bảng
+                                            tds[1].querySelector('.editable-cell').textContent = item.sku;
+                                            tds[2].querySelector('.editable-cell').textContent = item.description;
+                                            tds[3].querySelector('.editable-cell').textContent = item.brand || '-';
+                                            const priceInput = tds[6].querySelector('.price');
+                                            if(priceInput) priceInput.value = item.sell_price;
+                                            
+                                            closeDropdown();
+                                            calculate();};
+                                        dropdown.appendChild(div);
+                                    });
+                                    document.body.appendChild(dropdown);
+                                    activeDropdown = dropdown;
+                                })
+                                .catch(err => console.log('Quá trình Fetch Auto-suggest bị từ chối: Backend chưa bật!'));
+                            }, 400); // 400ms debounce
+                        }
+                    }
+                }
+            });
+
+            calculate();
+
+            // === PRODUCT PICKER MODAL LOGIC ===
+            const pickerApi = location.protocol === 'file:'
+                ? 'http://localhost:8000/api/products'
+                : `${location.origin}/api/products`;
+            let pickerData = [];
+            let currentFilteredData = []; // Thêm biến global để lưu filtered data
+            window.activeCategoryRow = null;
+
+            function uniqueSorted(values) {
+                return [...new Set(values.filter(Boolean))].sort((a, b) => a.localeCompare(b, 'vi'));
+            }
+
+            function escapeHtml(value) {
+                return String(value ?? '')
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            }
+
+            function resetPickerFilters() {
+                document.getElementById('pickerSearch').value = '';
+                currentFilteredData = []; // Reset filtered data
+
+                const selCat = document.getElementById('pickerCat');
+                selCat.innerHTML = '<option value="">-- Tất cả danh mục --</option>';
+                uniqueSorted(pickerData.map(p => p.category || '')).forEach(c => {
+                    selCat.innerHTML += '<option value="'+c+'">'+c+'</option>';
+                });
+
+                const selBrand = document.getElementById('pickerBrand');
+                selBrand.innerHTML = '<option value="">-- Tất cả thương hiệu --</option>';
+                uniqueSorted(pickerData.map(p => p.brand || '')).forEach(b => {
+                    selBrand.innerHTML += '<option value="'+b+'">'+b+'</option>';
+                });
+            }
+
+            window.openProductPicker = function(btn) {
+                window.activeCategoryRow = btn ? btn.closest('tr.category-row') : null;
+                document.getElementById('productPickerModal').style.display = 'flex';
+                
+                if(pickerData.length === 0) {
+                    document.getElementById('pickerBody').innerHTML = '<tr><td colspan="5" style="padding:20px;text-align:center;color:#64748b;">Đang tải dữ liệu...</td></tr>';
+                    fetch(pickerApi)
+                    .then(r => r.json())
+                    .then(data => {
+                        pickerData = data;
+                        resetPickerFilters();
+                        const selCat = document.getElementById('pickerCat');
+                        const selBrand = document.getElementById('pickerBrand');
+                        selCat.innerHTML = '<option value="">-- Tất cả danh mục --</option>';
+                        
+                        selBrand.innerHTML = '<option value="">-- Tất cả thương hiệu --</option>';
+                        
+                        resetPickerFilters();
+                        window.filterPicker();
+                    })
+                    .catch(e => {
+                        document.getElementById('pickerBody').innerHTML = '<tr><td colspan="5" style="text-align:center;color:red;padding:20px;">Lỗi kết nối Database! Đảm bảo backend đang chạy.</td></tr>';
+                    });
+                } else {
+                    resetPickerFilters();
+                    window.filterPicker();
+                }
+            };
+
+            window.closeProductPicker = function() {
+                document.getElementById('productPickerModal').style.display = 'none';
+                window.activeCategoryRow = null;
+            };
+
+            window.filterPicker = function() {
+                const q = document.getElementById('pickerSearch').value.toLowerCase();
+                const cat = document.getElementById('pickerCat').value;
+                const brand = document.getElementById('pickerBrand').value;
+                
+                let filtered = pickerData;
+                if(cat) filtered = filtered.filter(p => p.category === cat);
+                if(brand) filtered = filtered.filter(p => p.brand === brand);
+                if(q) filtered = filtered.filter(p =>
+                    (p.sku||'').toLowerCase().includes(q) ||
+                    (p.description||'').toLowerCase().includes(q) ||
+                    (p.brand||'').toLowerCase().includes(q)
+                );
+                
+                const tbody = document.getElementById('pickerBody');
+                if(filtered.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#64748b;">Không tìm thấy sản phẩm.</td></tr>';
+                    currentFilteredData = [];
+                    return;
+                }
+                
+                currentFilteredData = filtered; // Lưu filtered data
+                tbody.innerHTML = filtered.map((p, index) => {
+                    const sku = escapeHtml(p.sku || '');
+                    const description = escapeHtml(p.description || '');
+                    const category = escapeHtml(p.category || '');
+                    const brand = escapeHtml(p.brand || '');
+                    const price = new Intl.NumberFormat('vi-VN').format(p.sell_price || 0);
+
+                    return `
+                    <tr>
+                        <td>${sku}</td>
+                        <td>
+                            <div>${description}</div>
+                            ${brand ? `<div style="margin-top:4px;font-size:12px;color:#b45309;font-weight:600;">Hãng: ${brand}</div>` : ''}
+                        </td>
+                        <td style="color:#64748b;">${category}</td>
+                        <td style="text-align:right;color:#10b981;font-weight:bold;">${price}</td>
+                        <td style="text-align:center;">
+                            <button type="button" onclick="insertProductFromPicker(${index})" style="background:#3b82f6;color:white;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-weight:bold;">Chọn</button>
+                        </td>
+                    </tr>`;
+                }).join('');
+            };
+
+            window.insertProductFromPicker = function(index) {
+                const p = currentFilteredData[index];
+
+                if (!p) {
+                    console.error('Product not found at index', index);
+                    return;
+                }
+
+                let nextRow = null;
+                const tbody = document.getElementById('quote-body');
+                if(window.activeCategoryRow) {
+                    nextRow = window.activeCategoryRow.nextElementSibling;
+                    while(nextRow && !nextRow.classList.contains('category-row')) {
+                        nextRow = nextRow.nextElementSibling;
+                    }
+                }
+
+                const tr = createQuoteRowElement(p);
+
+                if(nextRow) {
+                    tbody.insertBefore(tr, nextRow);
+                } else {
+                    tbody.appendChild(tr);
+                }
+
+                calculate();
+                const msg = document.createElement('div');
+                msg.textContent = 'Inserted: ' + (p.sku || p.description);
+                msg.style.cssText = 'position:fixed; bottom:20px; right:20px; background:#10b981; color:white; padding:10px 20px; border-radius:6px; z-index:10001; font-family: Inter, sans-serif; font-size: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);';
+                document.body.appendChild(msg);
+                setTimeout(() => msg.remove(), 2000);
+            };
+            // ================================
+
+            // === NHẬN SẢN PHẨM TỪ ADMIN ===
+            (function importFromAdmin() {
+                const raw = localStorage.getItem('admin_export_products');
+                if (!raw) return;
+                try {
+                    const items = JSON.parse(raw);
+                    if (!items || !items.length) return;
+                    
+                    const catSummary = {};
+                    items.forEach(p => {
+                        const cat = p.category || 'Chưa phân loại';
+                        if (!catSummary[cat]) catSummary[cat] = [];
+                        catSummary[cat].push(p);
+                    });
+
+                    let msg = '📋 Nhận ' + items.length + ' sản phẩm từ Admin:\n';
+                    for (const [cat, prods] of Object.entries(catSummary)) {
+                        msg += '\n▸ ' + cat + ' (' + prods.length + ' SP)';
+                    }
+                    msg += '\n\nBạn có muốn thêm vào bảng báo giá không?';
+                    
+                    if (!confirm(msg)) {
+                        localStorage.removeItem('admin_export_products');
+                        return;
+                    }
+
+                    const tbody = document.getElementById('quote-body');
+                    
+                    for (const [cat, prods] of Object.entries(catSummary)) {
+                        // Thêm dòng danh mục
+                        const catTr = document.createElement('tr');
+                        catTr.className = 'category-row';
+                        catTr.innerHTML = '<td colspan="9"><div class="category-header-wrap"><div class="editable-cell" contenteditable="true" spellcheck="false">' + cat.toUpperCase() + '</div><div class="print-hide" style="display:flex"><button class="btn-cat-action btn-cat-add" onclick="addRowToCategory(this)" tabindex="-1">+ Thêm TB</button><button class="btn-cat-action btn-cat-db" onclick="openProductPicker(this)" tabindex="-1">🔍 Từ DB</button><button class="btn-cat-action btn-cat-del" onclick="deleteCategory(this)" tabindex="-1">Xóa DM</button></div></div></td>';
+                        tbody.appendChild(catTr);
+
+                        // Thêm từng sản phẩm
+                        prods.forEach(p => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = '<td class="text-center"></td>' +
+                                '<td><div class="editable-cell" contenteditable="true" spellcheck="false">' + (p.sku || '-') + '</div></td>' +
+                                '<td><div class="editable-cell" contenteditable="true" spellcheck="false">' + (p.description || 'Sản phẩm') + '</div></td>' +
+                                '<td><div class="editable-cell" contenteditable="true" spellcheck="false">' + (p.brand || '-') + '</div></td>' +
+                                '<td class="text-center"><select class="unit">' +
+                                    '<option value="Cai"' + ((p.unit || 'Cai') === 'Cai' ? ' selected' : '') + '>Cái</option>' +
+                                    '<option value="Bo"' + ((p.unit || 'Cai') === 'Bo' ? ' selected' : '') + '>Bộ</option>' +
+                                    '<option value="M"' + ((p.unit || 'Cai') === 'M' ? ' selected' : '') + '>M</option>' +
+                                '</select></td>' +
+                                '<td class="text-center"><input type="number" min="0" class="qty" value="1"></td>' +
+                                '<td class="text-right"><input type="number" min="0" class="price" value="' + (p.sell_price || 0) + '"></td>' +
+                                '<td class="text-right amount">0</td>' +
+                                '<td class="text-center action-col"><button class="btn-delete" onclick="deleteRow(this)" title="Xóa" tabindex="-1"><svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></td>';
+                            tbody.appendChild(tr);
+                        });
+                    }
+
+                    localStorage.removeItem('admin_export_products');
+                    calculate();alert('✅ Đã thêm ' + items.length + ' sản phẩm vào bảng báo giá!');
+                } catch(e) {
+                    console.error('Import error:', e);
+                    localStorage.removeItem('admin_export_products');
+                }
+            })();
+            
+            // --- LOGIC LUU/TAI BAO GIA TU DB ---
+            window.saveQuoteToDB = function() {
+                const data = serializeQuoteData();
+
+                let clientName = 'Khach hang moi';
+                try {
+                    const editableCells = document.querySelectorAll('.client-info .editable-cell');
+                    if(editableCells.length > 0) {
+                        clientName = editableCells[0].textContent.trim();
+                    }
+                } catch(e) {}
+                
+                const customerName = prompt("Nhap ten khach hang de luu bao gia nay:", clientName);
+                if (!customerName) return;
+
+                const payload = {
+                    customer_name: customerName,
+                    data: JSON.stringify(data)
+                };
+
+                fetch("http://localhost:8000/api/quotes", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                })
+                .then(r => r.json())
+                .then(() => {
+                    alert("Da luu bao gia vao Database thanh cong.");
+                })
+                .catch(e => {
+                    alert("Loi khi luu bao gia: " + e.message);
+                });
+            }
+
+            window.openQuoteManager = function() {
+                document.getElementById('quoteManagerModal').style.display = 'flex';
+                window.loadQuotesList();
+            }
+
+            window.closeQuoteManager = function() {
+                document.getElementById('quoteManagerModal').style.display = 'none';
+            }
+
+            window.loadQuotesList = function() {
+                const tbody = document.getElementById('quoteManagerBody');
+                tbody.innerHTML = '<tr><td colspan="4" style="padding: 20px; text-align: center; color: #64748b;">Đang tải dữ liệu...</td></tr>';
+                
+                fetch("http://localhost:8000/api/quotes")
+                .then(r => r.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="4" style="padding: 20px; text-align: center; color: #64748b;">Chưa có báo giá nào được lưu.</td></tr>';
+                        return;
+                    }
+                    tbody.innerHTML = data.map(q => {
+                        const date = new Date(q.created_at).toLocaleString('vi-VN');
+                        const safeData = JSON.stringify(q.data).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+                        return `
+                            <tr>
+                                <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">#${q.id}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: 600;">${q.customer_name}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">${date}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: center;">
+                                    <button onclick='loadQuoteData(${safeData})' style="padding: 4px 8px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 4px;">📂 Tải</button>
+                                    <button onclick="deleteQuoteFromDB(${q.id})" style="padding: 4px 8px; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer;">🗑️</button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                })
+                .catch(e => {
+                    tbody.innerHTML = '<tr><td colspan="4" style="padding: 20px; text-align: center; color: #ef4444;">Lỗi kết nối Server!</td></tr>';
+                });
+            }
+
+            window.loadQuoteData = function(dataStr) {
+                if(!confirm("Bao gia hien tai se bi ghi de. Ban co chac muon tai bao gia nay?")) return;
+                try {
+                    const data = JSON.parse(dataStr);
+                    applyQuoteData(data);
+                    calculate();
+                    document.getElementById('quoteManagerModal').style.display = 'none';
+                } catch(e) {
+                    alert("Loi khi doc du lieu: " + e.message);
+                }
+            }
+
+            window.deleteQuoteFromDB = function(id) {
+                if(!confirm("Bạn có chắc chắn muốn xóa vĩnh viễn báo giá #" + id + "?")) return;
+                fetch("http://localhost:8000/api/quotes/" + id, { method: "DELETE" })
+                .then(r => r.json())
+                .then(() => {
+                    window.loadQuotesList();
+                })
+                .catch(e => alert("Lỗi: " + e.message));
+            }
+
+            // --- ENHANCED QUOTE EXPORT/EDIT LOGIC ---
+            const QUOTE_API_BASE = location.protocol === 'file:' ? 'http://localhost:8000/api' : `${location.origin}/api`;
+            window.currentQuoteId = null;
+            window.savedQuoteCache = {};
+
+            function quoteEscapeHtml(value) {
+                return String(value ?? '')
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            }
+
+            function quoteText(node) {
+                return node ? node.textContent.replace(/\s+/g, ' ').trim() : '';
+            }
+
+            function moneyNumber(value) {
+                const raw = String(value ?? '').replace(/[^\d-]/g, '');
+                const parsed = parseFloat(raw);
+                return Number.isFinite(parsed) ? parsed : 0;
+            }
+
+            function getCurrentCustomerName() {
+                const cell = document.querySelector('.client-info .editable-cell');
+                const name = quoteText(cell);
+                return name || 'Khach hang moi';
+            }
+
+            function getQuoteMeta() {
+                const quoteCells = document.querySelectorAll('.quote-info .editable-cell');
+                const clientCells = document.querySelectorAll('.client-section .client-info:first-child .editable-cell');
+                return {
+                    code: quoteText(quoteCells[0]) || 'Bao gia',
+                    date: quoteText(quoteCells[1]),
+                    customer: quoteText(clientCells[0]) || getCurrentCustomerName(),
+                    project: quoteText(clientCells[1]),
+                    subtotal: document.getElementById('subtotal')?.textContent || '0',
+                    installationFee: document.getElementById('installationFee')?.textContent || '0',
+                    transportFee: document.getElementById('transportFee')?.value || '0',
+                    grandtotal: document.getElementById('grandtotal')?.textContent || '0'
+                };
+            }
+
+            function cleanFilePart(value) {
+                return String(value || 'bao-gia')
+                    .trim()
+                    .replace(/[\\/:*?"<>|]+/g, '-')
+                    .replace(/\s+/g, '-')
+                    .replace(/-+/g, '-')
+                    .replace(/^-|-$/g, '')
+                    .slice(0, 90) || 'bao-gia';
+            }
+
+            function getQuoteFilename(ext) {
+                const meta = getQuoteMeta();
+                return `${cleanFilePart(meta.code)}-${cleanFilePart(meta.customer)}.${ext}`;
+            }
+
+            function updateQuoteEditState(id, customerName) {
+                window.currentQuoteId = id || null;
+                const status = document.getElementById('currentQuoteStatus');
+                if (!status) return;
+                if (window.currentQuoteId) {
+                    status.style.display = 'block';
+                    status.textContent = `Đang sửa báo giá #${window.currentQuoteId} - ${customerName || getCurrentCustomerName()}. Bấm "Lưu vào DB" để cập nhật bản ghi này.`;
+                } else {
+                    status.style.display = 'none';
+                    status.textContent = '';
+                }
+            }
+
+            function parseQuoteRecordData(record) {
+                if (!record || !record.data) throw new Error('Quote data is empty.');
+                return typeof record.data === 'string' ? JSON.parse(record.data) : record.data;
+            }
+
+            function loadQuoteRecord(record, askConfirm = true) {
+                if (askConfirm && !confirm("Bao gia hien tai se bi ghi de. Ban co chac muon tai bao gia nay de sua?")) return;
+                const data = parseQuoteRecordData(record);
+                applyQuoteData(data);
+                calculate();
+                updateQuoteEditState(record.id, record.customer_name);
+                document.getElementById('quoteManagerModal').style.display = 'none';
+            }
+
+            function fetchJson(url, options = {}) {
+                return fetch(url, options).then(r => {
+                    if (!r.ok) {
+                        return r.json().catch(() => ({})).then(data => {
+                            throw new Error(data.detail || r.statusText || 'Request failed');
+                        });
+                    }
+                    return r.json();
+                });
+            }
+
+            window.saveQuoteToDB = function() {
+                const data = serializeQuoteData();
+                const customerName = prompt(
+                    window.currentQuoteId
+                        ? `Nhập tên khách hàng để cập nhật báo giá #${window.currentQuoteId}:`
+                        : "Nhập tên khách hàng để lưu báo giá này:",
+                    getCurrentCustomerName()
+                );
+                if (!customerName) return;
+
+                const isUpdate = Boolean(window.currentQuoteId);
+                const payload = {
+                    customer_name: customerName,
+                    data: JSON.stringify(data)
+                };
+                const url = isUpdate
+                    ? `${QUOTE_API_BASE}/quotes/${window.currentQuoteId}`
+                    : `${QUOTE_API_BASE}/quotes`;
+
+                fetchJson(url, {
+                    method: isUpdate ? "PUT" : "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                })
+                .then(saved => {
+                    updateQuoteEditState(saved.id, saved.customer_name);
+                    alert(isUpdate ? "Đã cập nhật báo giá đã lưu." : "Đã lưu báo giá vào Database thành công.");
+                })
+                .catch(e => alert("Loi khi luu bao gia: " + e.message));
+            };
+
+            window.loadQuotesList = function() {
+                const tbody = document.getElementById('quoteManagerBody');
+                tbody.innerHTML = '<tr><td colspan="4" style="padding: 20px; text-align: center; color: #64748b;">Đang tải dữ liệu...</td></tr>';
+
+                fetchJson(`${QUOTE_API_BASE}/quotes`)
+                .then(data => {
+                    window.savedQuoteCache = {};
+                    if (data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="4" style="padding: 20px; text-align: center; color: #64748b;">Chưa có báo giá nào được lưu.</td></tr>';
+                        return;
+                    }
+
+                    data.forEach(q => { window.savedQuoteCache[q.id] = q; });
+
+                    tbody.innerHTML = data.map(q => {
+                        const date = new Date(q.created_at).toLocaleString('vi-VN');
+                        const customer = quoteEscapeHtml(q.customer_name);
+                        return `
+                            <tr>
+                                <td style="padding: 10px; border-bottom: 1px solid #e2e8f0;">#${q.id}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: 600;">${customer}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">${date}</td>
+                                <td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: center; white-space: nowrap;">
+                                    <button onclick="loadQuoteDataById(${q.id})" style="padding: 4px 8px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; margin: 2px;">Sửa</button>
+                                    <button onclick="duplicateQuoteInDB(${q.id})" style="padding: 4px 8px; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer; margin: 2px;">Nhân bản</button>
+                                    <button onclick="deleteQuoteFromDB(${q.id})" style="padding: 4px 8px; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer; margin: 2px;">Xóa</button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                })
+                .catch(e => {
+                    tbody.innerHTML = '<tr><td colspan="4" style="padding: 20px; text-align: center; color: #ef4444;">Lỗi kết nối Server!</td></tr>';
+                });
+            };
+
+            window.loadQuoteDataById = function(id) {
+                const cached = window.savedQuoteCache[id];
+                if (cached) {
+                    loadQuoteRecord(cached, true);
+                    return;
+                }
+                fetchJson(`${QUOTE_API_BASE}/quotes/${id}`).then(q => loadQuoteRecord(q, true)).catch(e => alert("Loi: " + e.message));
+            };
+
+            window.loadQuoteData = function(dataStr) {
+                if(!confirm("Bao gia hien tai se bi ghi de. Ban co chac muon tai bao gia nay?")) return;
+                try {
+                    const data = JSON.parse(dataStr);
+                    applyQuoteData(data);
+                    calculate();
+                    updateQuoteEditState(null, '');
+                    document.getElementById('quoteManagerModal').style.display = 'none';
+                } catch(e) {
+                    alert("Loi khi doc du lieu: " + e.message);
+                }
+            };
+
+            window.duplicateQuoteInDB = function(id) {
+                if(!confirm("Nhân bản báo giá #" + id + " và mở bản sao để sửa?")) return;
+                fetchJson(`${QUOTE_API_BASE}/quotes/${id}/duplicate`, { method: "POST" })
+                .then(q => {
+                    window.savedQuoteCache[q.id] = q;
+                    loadQuoteRecord(q, false);
+                    alert("Đã nhân bản thành báo giá #" + q.id + ".");
+                })
+                .catch(e => alert("Lỗi khi nhân bản: " + e.message));
+            };
+
+            window.deleteQuoteFromDB = function(id) {
+                if(!confirm("Bạn có chắc chắn muốn xóa vĩnh viễn báo giá #" + id + "?")) return;
+                fetchJson(`${QUOTE_API_BASE}/quotes/${id}`, { method: "DELETE" })
+                .then(() => {
+                    if (window.currentQuoteId === id) updateQuoteEditState(null, '');
+                    window.loadQuotesList();
+                })
+                .catch(e => alert("Loi: " + e.message));
+            };
+
+            function collectQuoteRows() {
+                const rows = [];
+                document.querySelectorAll('#quote-body tr').forEach(tr => {
+                    if (tr.classList.contains('deleted-row')) return;
+                    if (tr.classList.contains('category-row')) {
+                        rows.push({ type: 'category', name: quoteText(tr.querySelector('.editable-cell') || tr) });
+                        return;
+                    }
+
+                    const cells = tr.children;
+                    const hasBrand = cells.length >= 9;
+                    const unitIndex = hasBrand ? 4 : 3;
+                    const qtyIndex = hasBrand ? 5 : 4;
+                    const priceIndex = hasBrand ? 6 : 5;
+                    const amountIndex = hasBrand ? 7 : 6;
+                    const unitEl = cells[unitIndex]?.querySelector('select');
+                    const qtyEl = cells[qtyIndex]?.querySelector('input');
+                    const priceEl = cells[priceIndex]?.querySelector('input');
+
+                    rows.push({
+                        type: 'item',
+                        stt: quoteText(cells[0]),
+                        sku: quoteText(cells[1]),
+                        description: quoteText(cells[2]),
+                        brand: hasBrand ? quoteText(cells[3]) : '',
+                        unit: unitEl ? (unitEl.options[unitEl.selectedIndex]?.text || unitEl.value) : quoteText(cells[unitIndex]),
+                        qty: qtyEl ? qtyEl.value : quoteText(cells[qtyIndex]),
+                        price: priceEl ? priceEl.value : moneyNumber(quoteText(cells[priceIndex])),
+                        amount: moneyNumber(quoteText(cells[amountIndex]))
+                    });
+                });
+                return rows;
+            }
+
+            function downloadBlob(blob, filename) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+            }
+
+            window.exportQuoteExcel = function() {
+                calculate();
+                const meta = getQuoteMeta();
+                const rows = collectQuoteRows();
+                const bodyRows = rows.map(row => {
+                    if (row.type === 'category') {
+                        return `<tr><td colspan="8" class="category">${quoteEscapeHtml(row.name)}</td></tr>`;
+                    }
+                    return `<tr>
+                        <td>${quoteEscapeHtml(row.stt)}</td>
+                        <td>${quoteEscapeHtml(row.sku)}</td>
+                        <td>${quoteEscapeHtml(row.description)}</td>
+                        <td>${quoteEscapeHtml(row.brand)}</td>
+                        <td>${quoteEscapeHtml(row.unit)}</td>
+                        <td class="number">${quoteEscapeHtml(row.qty)}</td>
+                        <td class="number">${quoteEscapeHtml(row.price)}</td>
+                        <td class="number">${quoteEscapeHtml(row.amount)}</td>
+                    </tr>`;
+                }).join('');
+
+                const html = `<!doctype html>
+                    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel">
+                    <head><meta charset="UTF-8">
+                    <style>
+                        body{font-family:Arial,sans-serif}
+                        table{border-collapse:collapse;width:100%}
+                        td,th{border:1px solid #999;padding:6px;vertical-align:top}
+                        th{background:#e2e8f0;font-weight:bold}
+                        .title{font-size:20px;font-weight:bold;text-align:center;border:none}
+                        .meta td{border:none}
+                        .category{background:#dbeafe;font-weight:bold;text-transform:uppercase}
+                        .number{text-align:right;mso-number-format:"#,##0"}
+                    </style></head><body>
+                    <table class="meta">
+                        <tr><td class="title" colspan="8">BAO GIA</td></tr>
+                        <tr><td>Ma BG</td><td colspan="3">${quoteEscapeHtml(meta.code)}</td><td>Ngay</td><td colspan="3">${quoteEscapeHtml(meta.date)}</td></tr>
+                        <tr><td>Khach hang</td><td colspan="3">${quoteEscapeHtml(meta.customer)}</td><td>Du an</td><td colspan="3">${quoteEscapeHtml(meta.project)}</td></tr>
+                    </table>
+                    <br>
+                    <table>
+                        <thead><tr><th>STT</th><th>Ma SP</th><th>Mo ta</th><th>Thuong hieu</th><th>DVT</th><th>So luong</th><th>Don gia</th><th>Thanh tien</th></tr></thead>
+                        <tbody>${bodyRows}</tbody>
+                    </table>
+                    <br>
+                    <table class="meta">
+                        <tr><td>Cong tien hang</td><td>${quoteEscapeHtml(meta.subtotal)}</td></tr>
+                        <tr><td>Phi lap dat</td><td>${quoteEscapeHtml(meta.installationFee)}</td></tr>
+                        <tr><td>Phi van chuyen</td><td>${quoteEscapeHtml(meta.transportFee)}</td></tr>
+                        <tr><td><strong>Tong cong</strong></td><td><strong>${quoteEscapeHtml(meta.grandtotal)}</strong></td></tr>
+                    </table>
+                    </body></html>`;
+
+                downloadBlob(new Blob(['\ufeff', html], { type: 'application/vnd.ms-excel;charset=utf-8;' }), getQuoteFilename('xls'));
+            };
+
+            window.exportQuotePdf = function() {
+                calculate();
+                const oldTitle = document.title;
+                document.title = getQuoteFilename('pdf').replace(/\.pdf$/i, '');
+                window.print();
+                setTimeout(() => { document.title = oldTitle; }, 1000);
+            };
+
+            updateQuoteEditState(null, '');
+        });
+    </script>
+</body>
+</html>
