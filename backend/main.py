@@ -248,6 +248,14 @@ def serve_admin():
 PARENT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 
+@app.get("/")
+def serve_index():
+    path = os.path.join(PARENT_DIR, "index.html")
+    if os.path.exists(path):
+        return FileResponse(path, media_type="text/html")
+    raise HTTPException(status_code=404, detail="Trang chủ không tồn tại")
+
+
 @app.get("/baogia")
 def serve_baogia():
     path = os.path.join(PARENT_DIR, "Bao_Gia_Jay_Home_Truc_Quan.html")
@@ -372,7 +380,7 @@ def get_quotes(db: Session = Depends(get_db)):
 def get_quote(quote_id: int, db: Session = Depends(get_db)):
     db_quote = db.query(database.Quote).filter(database.Quote.id == quote_id).first()
     if not db_quote:
-        raise HTTPException(status_code=404, detail="KhÃ´ng tÃ¬m tháº¥y bÃ¡o giÃ¡")
+        raise HTTPException(status_code=404, detail="Không tìm thấy báo giá")
     return db_quote
 
 
@@ -380,7 +388,7 @@ def get_quote(quote_id: int, db: Session = Depends(get_db)):
 def update_quote(quote_id: int, quote: QuoteUpdate, db: Session = Depends(get_db)):
     db_quote = db.query(database.Quote).filter(database.Quote.id == quote_id).first()
     if not db_quote:
-        raise HTTPException(status_code=404, detail="KhÃ´ng tÃ¬m tháº¥y bÃ¡o giÃ¡")
+        raise HTTPException(status_code=404, detail="Không tìm thấy báo giá")
     db_quote.customer_name = quote.customer_name
     db_quote.data = quote.data
     db.commit()
@@ -392,7 +400,7 @@ def update_quote(quote_id: int, quote: QuoteUpdate, db: Session = Depends(get_db
 def duplicate_quote(quote_id: int, db: Session = Depends(get_db)):
     db_quote = db.query(database.Quote).filter(database.Quote.id == quote_id).first()
     if not db_quote:
-        raise HTTPException(status_code=404, detail="KhÃ´ng tÃ¬m tháº¥y bÃ¡o giÃ¡")
+        raise HTTPException(status_code=404, detail="Không tìm thấy báo giá")
     new_quote = database.Quote(
         customer_name=f"{db_quote.customer_name} - Copy",
         created_at=datetime.now().isoformat(),

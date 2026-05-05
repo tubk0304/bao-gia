@@ -1,105 +1,94 @@
-# Hướng dẫn triển khai dự án lên VPS với Cloudflare Tunnel
+# Hướng dẫn triển khai dự án (KHÔNG CẦN QUYỀN SUDO)
 
-Tài liệu này hướng dẫn cách đưa dự án "Báo Giá Nhanh" lên VPS Linux (Ubuntu/Debian) và sử dụng Cloudflare Tunnel để truy cập công khai an toàn mà không cần mở port.
+Tài liệu này hướng dẫn cách triển khai ứng dụng lên VPS khi bạn chỉ có quyền User thường (không có sudo).
 
-## 1. Chuẩn bị trên VPS
+## 1. Chuẩn bị mã nguồn trên VPS
 
-### Cài đặt Docker và Docker Compose (Khuyên dùng)
-Docker giúp quản lý môi trường Backend và Frontend đồng nhất, tránh lỗi xung đột thư viện.
-
+### Bước 1: Kéo code từ GitHub
 ```bash
-# Cập nhật hệ thống
-sudo apt update && sudo apt upgrade -y
-
-# Cài đặt Docker
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
-
-# Cài đặt Docker Compose
-sudo apt install docker-compose-plugin -y
+git clone https://github.com/tubk0304/bao-gia.git
+cd bao-gia
 ```
 
-## 2. Cấu hình Docker cho dự án
+### Bước 2: Tạo môi trường ảo và cài đặt thư viện
+```bash
+cd backend
+python3 -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+```
 
-Bạn nên tạo một file `docker-compose.yml` tại thư mục gốc của dự án trên VPS để chạy cả Backend và Frontend:
+### Bước 3: Cấu hình file môi trường và Database
+*   **File .env:** Tạo file `backend/.env` và dán nội dung API Key vào.
+*   **Database:** Dùng WinSCP/FileZilla copy file `catalog.db` vào thư mục `backend/` trên VPS.
 
+## 2. Khởi chạy Backend (Phục vụ cả Frontend)
+
+Vì không có sudo để cài Nginx hay Docker, chúng ta chạy trực tiếp bằng `uvicorn` và cho nó chạy ngầm bằng `nohup`.
+
+```bash
+# Đang ở trong thư mục backend và đã activate venv
+nohup uvicorn main:app --host 0.0.0.0 --port 8000 > backend.log 2>&1 &
+```
+*Lúc này ứng dụng sẽ chạy tại port 8000 và tự phục vụ index.html.*
+
+## 3. Cấu hình Cloudflare Tunnel (Bản Portable)
+
+Vì không có sudo, chúng ta tải trực tiếp file thực thi của Cloudflare về thư mục cá nhân.
+
+### Bước 1: Tải cloudflared
+```bash
+wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64
+chmod +x cloudflared-linux-amd64
+mv cloudflared-linux-amd64 cloudflared
+```
+
+### Bước 2: Xác thực và Tạo Tunnel
+```bash
+./cloudflared tunnel login
+# Click vào link hiện ra để chọn domain
+
+./cloudflared tunnel create bao-gia-tunnel
+# Lưu lại ID của tunnel
+```
+
+### Bước 3: Tạo file cấu hình `config.yml`
+Tạo file `config.yml` ngay tại thư mục hiện tại:
 ```yaml
-services:
-  backend:
-    build: 
-      context: .
-      dockerfile: backend/Dockerfile
-    restart: always
-    env_file:
-      - ./backend/.env
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./backend/catalog.db:/app/catalog.db
-
-  frontend:
-    image: nginx:alpine
-    restart: always
-    ports:
-      - "8080:80"
-    volumes:
-      - ./index.html:/usr/share/nginx/html/index.html
-      - ./Asset-14logo-khoa-duy-blackok-1024x461.png:/usr/share/nginx/html/logo.png
-```
-
-## 3. Cấu hình Cloudflare Tunnel (cloudflared)
-
-Cloudflare Tunnel giúp bạn trỏ domain về VPS mà không cần mở Port (NAT) trên Firewall/Router của nhà mạng.
-
-### Bước 1: Cài đặt cloudflared trên VPS
-```bash
-curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
-sudo dpkg -i cloudflared.deb
-```
-
-### Bước 2: Xác thực Cloudflare
-```bash
-cloudflared tunnel login
-```
-*Hệ thống sẽ hiện một đường link, bạn copy và dán vào trình duyệt để chọn domain muốn dùng.*
-
-### Bước 3: Tạo Tunnel
-```bash
-cloudflared tunnel create bao-gia-tunnel
-```
-*Lưu lại mã ID (Chuỗi ký tự dài) được trả về.*
-
-### Bước 4: Cấu hình File Config (`~/.cloudflared/config.yml`)
-Tạo file config để map domain vào các dịch vụ Docker:
-```yaml
-tunnel: <MÃ_ID_TUNNEL_CỦA_BẠN>
-credentials-file: /root/.cloudflared/<MÃ_ID_TUNNEL_CỦA_BẠN>.json
+tunnel: <MÃ_ID_TUNNEL>
+credentials-file: /home/youruser/.cloudflared/<MÃ_ID_TUNNEL>.json
 
 ingress:
-  - hostname: app.yourdomain.com
-    service: http://localhost:8080
-  - hostname: api.yourdomain.com
+  - hostname: baogia.yourdomain.com
     service: http://localhost:8000
   - service: http_status:404
 ```
 
-### Bước 5: Chạy Tunnel
+### Bước 4: Chạy Tunnel ngầm
 ```bash
-# Tạo bản ghi DNS tự động
-cloudflared tunnel route dns bao-gia-tunnel app.yourdomain.com
-cloudflared tunnel route dns bao-gia-tunnel api.yourdomain.com
-
-# Cài đặt tunnel thành dịch vụ hệ thống để tự khởi động cùng VPS
-sudo cloudflared service install
-sudo systemctl start cloudflared
-sudo systemctl enable cloudflared
+nohup ./cloudflared tunnel --config config.yml run bao-gia-tunnel > tunnel.log 2>&1 &
 ```
 
-## 4. Quy trình cập nhật (Workflow)
+## 4. Cách kiểm tra và tắt ứng dụng
 
-Mỗi khi bạn có thay đổi ở máy Local:
-1.  **Local:** `git add .` -> `git commit -m "Cập nhật..."` -> `git push origin main`.
-2.  **VPS:** `git pull origin main` -> `docker compose up -d --build`.
+### Xem ứng dụng có đang chạy không:
+```bash
+ps aux | grep uvicorn
+ps aux | grep cloudflared
+```
+
+### Xem log để fix lỗi:
+```bash
+tail -f backend.log
+tail -f tunnel.log
+```
+
+### Tắt ứng dụng:
+```bash
+pkill uvicorn
+pkill cloudflared
+```
 
 ---
-**Ngày cập nhật:** 05/05/2026
+**Lưu ý:** Vì Backend đã được cập nhật để tự phục vụ file tĩnh, bạn chỉ cần trỏ 1 hostname duy nhất về port 8000 là có thể dùng được cả Web và API.
