@@ -29,9 +29,9 @@ Vì không có sudo để cài Nginx hay Docker, chúng ta chạy trực tiếp 
 
 ```bash
 # Đang ở trong thư mục backend và đã activate venv
-nohup uvicorn main:app --host 0.0.0.0 --port 8000 > backend.log 2>&1 &
+nohup uvicorn main:app --host 0.0.0.0 --port 7883 > backend.log 2>&1 &
 ```
-*Lúc này ứng dụng sẽ chạy tại port 8000 và tự phục vụ index.html.*
+*Lúc này ứng dụng sẽ chạy tại port 7883 và tự phục vụ index.html.*
 
 ## 3. Cấu hình Cloudflare Tunnel (Bản Portable)
 
@@ -61,7 +61,7 @@ credentials-file: /home/youruser/.cloudflared/<MÃ_ID_TUNNEL>.json
 
 ingress:
   - hostname: baogia.yourdomain.com
-    service: http://localhost:8000
+    service: http://localhost:7883
   - service: http_status:404
 ```
 
@@ -91,4 +91,4 @@ pkill cloudflared
 ```
 
 ---
-**Lưu ý:** Vì Backend đã được cập nhật để tự phục vụ file tĩnh, bạn chỉ cần trỏ 1 hostname duy nhất về port 8000 là có thể dùng được cả Web và API.
+**Lưu ý:** Vì Backend đã được cập nhật để tự phục vụ file tĩnh, bạn chỉ cần trỏ 1 hostname duy nhất về port 7883 là có thể dùng được cả Web và API.

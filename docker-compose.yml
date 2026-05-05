@@ -7,7 +7,7 @@ services:
     env_file:
       - ./backend/.env
     ports:
-      - "8000:8000"
+      - "7883:7883"
     volumes:
       - ./backend/catalog.db:/app/catalog.db
     networks:
