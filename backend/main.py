@@ -1,3 +1,4 @@
+import json
 import os
 from datetime import datetime
 from typing import List, Optional
@@ -26,6 +27,8 @@ app.add_middleware(
 )
 
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "")
+QUOTE_CODE_PLACEHOLDERS = {"", "Bao gia", "BG-YYYYMMDD", "BG-20260420-JH"}
+QUOTE_DATE_PLACEHOLDERS = {"", "dd/mm/yyyy", "20/04/2026"}
 
 
 def get_db():
@@ -96,6 +99,67 @@ def _normalize_uploaded_prices(item: dict, existing=None) -> dict:
         "input_price": distinct_prices[0],
         "sell_price": distinct_prices[1] if len(distinct_prices) >= 3 else distinct_prices[-1],
     }
+
+
+def _format_quote_date(value: datetime) -> str:
+    return value.strftime("%d/%m/%Y")
+
+
+def _format_quote_code(value: datetime) -> str:
+    return f"BG-{value.strftime('%Y%m%d')}"
+
+
+def _parse_quote_created_at(value: Optional[str]) -> datetime:
+    if value:
+        try:
+            return datetime.fromisoformat(value)
+        except ValueError:
+            pass
+    return datetime.now()
+
+
+def _normalize_quote_payload(
+    raw_data: str,
+    created_at: Optional[datetime] = None,
+    force_meta: bool = False,
+) -> str:
+    if not raw_data:
+        return raw_data
+
+    try:
+        payload = json.loads(raw_data)
+    except (TypeError, ValueError, json.JSONDecodeError):
+        return raw_data
+
+    if not isinstance(payload, dict):
+        return raw_data
+
+    outside_data = payload.get("outsideData")
+    if not isinstance(outside_data, list):
+        return raw_data
+
+    while len(outside_data) < 2:
+        outside_data.append("")
+
+    created_dt = created_at or datetime.now()
+    current_code = str(outside_data[0] or "").strip()
+    current_date = str(outside_data[1] or "").strip()
+
+    if force_meta or current_code in QUOTE_CODE_PLACEHOLDERS:
+        outside_data[0] = _format_quote_code(created_dt)
+    if force_meta or current_date in QUOTE_DATE_PLACEHOLDERS:
+        outside_data[1] = _format_quote_date(created_dt)
+
+    quote_meta = payload.get("quoteMeta")
+    if not isinstance(quote_meta, dict):
+        quote_meta = {}
+
+    quote_meta["code"] = outside_data[0]
+    quote_meta["date"] = outside_data[1]
+    quote_meta["created_at"] = created_dt.isoformat()
+    payload["quoteMeta"] = quote_meta
+
+    return json.dumps(payload, ensure_ascii=False)
 
 
 class ProductResponse(BaseModel):
