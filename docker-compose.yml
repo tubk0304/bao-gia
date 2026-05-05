@@ -1,0 +1,30 @@
+services:
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - ./backend/.env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/catalog.db:/app/catalog.db
+    networks:
+      - app-network
+
+  frontend:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - ./index.html:/usr/share/nginx/html/index.html
+      - ./Asset-14logo-khoa-duy-blackok-1024x461.png:/usr/share/nginx/html/logo.png
+      # Bạn có thể thêm các file .js hoặc .css nếu có ở đây
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
